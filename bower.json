@@ -1,0 +1,23 @@
+{
+  "name": "WebvsEd",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3",
+    "spectrum": "~1.1.1",
+    "dancer.js": "jsantell/dancer.js#~0.3.1",
+    "underscore": "~1.5.1",
+    "stats.js": "*",
+    "jsonform": "joshfire/jsonform",
+    "jqtree": "~0.17.0",
+    "webvs": "azeem/webvs",
+    "bootstrap": "2.3.2",
+    "jquery-ui": "~1.10.3"
+  }
+}
