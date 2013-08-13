@@ -71,7 +71,7 @@ module.exports = function(grunt) {
                 "bower_components/spectrum/spectrum.js",
                 "bower_components/jsonform/lib/jsonform.js",
                 "bower_components/jqtree/tree.jquery.js",
-                "bower_components/bootstrap/bootstrap/bootstrap.js",
+                "bower_components/bootstrap/bootstrap/js/bootstrap.js",
                 "bower_components/webvs/lib/D.min.js",
                 "bower_components/webvs/dist/webvs.min.js"
             ]
