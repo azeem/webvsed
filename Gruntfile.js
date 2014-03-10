@@ -47,5 +47,5 @@ module.exports = function(grunt) {
 
     // Default task.
     grunt.registerTask('default', ['clean:dist', 'jshint', 'uglify:dist']);
-    grunt.registerTask("debug", ["watch"]);
+    grunt.registerTask("debug", ["connect", "watch"]);
 };
