@@ -3,3 +3,54 @@ body {
     font-size: 13px;
     overflow: hidden;
 }
+
+.webvsed-box {
+    border: 1px solid black;
+    font-size: 12px;
+    padding: 5px;
+}
+
+.webvsed-row1 {
+    height: 32px;
+    width: 100%;
+}
+
+.webvsed-row2 {
+    width: 100%;
+}
+
+.webvsed-sidebar {
+    width: 100px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.webvsed-pane {
+    height: 100%;
+    float: right;
+}
+
+.webvsed-pane .webvsed-tabclose {
+    float:right;
+    margin:6px 6px 0px 0px;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    display: inline;
+}
+
+.webvsed-pane .webvsed-tabclose:hover {
+    background-color: #CCCCCC;
+    border-radius: 3px;
+}
+
+.webvsed-tree ul {
+    margin: 0px;
+    padding: 10px 10px 10px 25px;
+}
+
+.webvsed-tree ul .jqtree-element {
+    padding: 3px;
+}
