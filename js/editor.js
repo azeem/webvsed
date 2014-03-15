@@ -2,7 +2,7 @@
 
     $.widget("webvs.webvseditor", {
         options: {
-            width: 600,
+            width: 700,
             height: 500
         },
 
@@ -58,6 +58,7 @@
 
             this._fixDimensions();
 
+            this.selectNode("root");
             this.showTab(this.tree.tree("getNodeById", "root"));
         },
 
@@ -105,12 +106,30 @@
             });
 
             this.tabs.on("tabsactivate", function(event, ui) {
-                this_.selectNode(ui.newTab.data("componentid"));
+                this_.selectNode(ui.newTab.data("webvsedComponentId"));
+            });
+
+            this.tabs.on("change", ".webvsed-form", function(event) {
+                this_.setWebvsOption($(this), $(event.target));
             });
 
             this.tabList.on("click", ".webvsed-tabclose", function() {
                 this_.closeTab($(this).parent());
             });
+        },
+
+        setWebvsOption: function(form, field) {
+            var componentId = form.parent().data("webvsedComponentId");
+            var node = this.tree.tree("getNodeById", componentId);
+
+            var path = [];
+            field.parents(".alpaca-fieldset-item-container").each(function() {
+                path.push($(this).data("alpacaItemContainerItemKey"));
+            });
+            path.reverse();
+
+            var value = Alpaca(form.get()).getControlByPath(path.join("/")).getValue();
+            node.component.setOption(path.join("."), value);
         },
 
         selectNode: function(id) {
@@ -122,7 +141,7 @@
         },
 
         closeTab: function(tab) {
-            var componentId = tab.data("componentid");
+            var componentId = tab.data("webvsedComponentId");
             tab.remove();
             $("#webvsed-"+componentId).remove();
             this.tabs.tabs("refresh");
@@ -139,7 +158,7 @@
             if(this._openTabs.indexOf(node.id) != -1) {
                 return;
             }
-            var tab = "<li data-componentid='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a>";
+            var tab = "<li data-webvsed-component-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a>";
             if(node.id != "root") {
                 tab += "<span class='webvsed-tabclose ui-icon ui-icon-close'></span>";
             }
@@ -148,9 +167,14 @@
 
             var componentClass = Webvs.getComponentClassName(node.component.constructor);
             if(componentClass in webvsFormdefs) {
-                var tabContent = $("<div id='webvsed-"+node.id+"'><div class='webvsed-form'></div></div>");
+                var tabContent = $("<div data-webvsed-component-id='"+node.id+"' id='webvsed-"+node.id+"'><div class='webvsed-form'></div></div>");
                 this.tabs.append(tabContent);
-                tabContent.find(".webvsed-form").alpaca(webvsFormdefs[componentClass]);
+
+                var alpacaOpts = {
+                    data: node.component.opts
+                };
+                $.extend(alpacaOpts, webvsFormdefs[componentClass]);
+                tabContent.find(".webvsed-form").alpaca(alpacaOpts);
             } else {
                 this.tabs.append("<div id='webvsed-"+node.id+"'>SOme empty content here</div>");
             }

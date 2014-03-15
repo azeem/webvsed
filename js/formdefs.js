@@ -2,86 +2,293 @@
     var FormDefs = {};
     window.webvsFormdefs = FormDefs;
 
-    FormDefs.EffectList = {
+    function getEnumKeys(obj) {
+        var keys = [];
+        for(key in obj) {
+            if(obj.hasOwnProperty(key)) {
+                keys.push(key);
+            }
+        }
+        return keys;
+    }
+
+    FormDefs.SuperScope = {
         "schema": {
             "type": "object",
-            "required": false,
             "properties": {
-                "new1394600618312": {
-                    "readonly": false,
-                    "required": false,
-                    "default": "",
-                    "format": "",
-                    "enum": [
-                        "Replace",
-                        "Additive",
-                        "Maximum"
-                    ]
+                "blendMode": {
+                    "title": "Output blend mode",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.BlendModes)
                 },
-                "new1394600686252": {
-                    "type": "boolean",
-                    "required": false
+                "channel": {
+                    "title": "Sound channel",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.Channels)
                 },
-                "new1394600816270": {
-                    "type": "boolean",
-                    "required": false
+                "source": {
+                    "title": "Scope data source",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.Source)
+                },
+                "drawMode": {
+                    "title": "Drawing mode",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.SuperScope.DrawModes)
+                },
+                "thickness": {
+                    "title": "Line/Dot thickness",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "clone": {
+                    "title": "Instance clones",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "object",
+                    "properties": {
+                        "init": {
+                            "title": "Initialization",
+                            "type": "string"
+                        },
+                        "onBeat": {
+                            "title": "On Beat",
+                            "type": "string"
+                        },
+                        "perFrame": {
+                            "title": "Per Frame",
+                            "type": "string"
+                        },
+                        "perPoint": {
+                            "title": "Per Point",
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
         "options": {
-            "focus": false,
-            "type": "object",
-            "validate": true,
-            "disabled": false,
-            "showMessages": true,
-            "collapsible": true,
-            "legendStyle": "button",
             "fields": {
-                "new1394600618312": {
-                    "id": "",
-                    "type": "select",
-                    "validate": true,
-                    "showMessages": true,
-                    "disabled": false,
-                    "hidden": false,
-                    "label": "Output Blend Mode",
-                    "fieldClass": "",
-                    "hideInitValidationError": false,
-                    "focus": false,
-                    "name": "output",
-                    "dataSource": "",
-                    "multiple": false,
-                    "size": -1,
-                    "emptySelectFirst": true,
-                    "readonly": false
+                "thickness": {
+                    "size": 4
                 },
-                "new1394600686252": {
-                    "id": "",
-                    "type": "checkbox",
-                    "validate": true,
-                    "showMessages": true,
-                    "disabled": false,
-                    "hidden": false,
-                    "label": "Clear every frame",
-                    "fieldClass": "",
-                    "hideInitValidationError": false,
-                    "focus": false,
-                    "name": "clearFrame",
-                    "rightLabel": ""
+                "clone": {
+                    "size": 4
                 },
-                "new1394600816270": {
-                    "id": "",
-                    "type": "checkbox",
-                    "validate": true,
-                    "showMessages": true,
-                    "disabled": false,
-                    "hidden": false,
-                    "label": "Enable On Beat",
-                    "fieldClass": "",
-                    "hideInitValidationError": false,
-                    "focus": false,
-                    "name": "enableOnBeat",
-                    "rightLabel": ""
+                "code": {
+                    "collapsed": true,
+                    "fields": {
+                        "init": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "onBeat": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "perFrame": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "perPoint": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    FormDefs.DynamicMovement = {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "noGrid": {
+                    "title": "Disable interpolation",
+                    "type": "boolean"
+                },
+                "gridW": {
+                    "title": "Grid width",
+                    "type": "integer",
+                    "dependencies": "noGrid"
+                },
+                "gridH": {
+                    "title": "Grid height",
+                    "type": "integer",
+                    "dependencies": "noGrid"
+                },
+                "blend": {
+                    "title": "Blend output",
+                    "type": "boolean"
+                },
+                "compat": {
+                    "title": "AVS compaibility mode",
+                    "type": "boolean"
+                },
+                "bFilter": {
+                    "title": "Bilinear filtering",
+                    "type": "boolean"
+                },
+                "coord": {
+                    "required": true,
+                    "title": "Coordinate mode",
+                    "enum": getEnumKeys(Webvs.DynamicMovement.CoordModes)
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "object",
+                    "properties": {
+                        "init": {
+                            "title": "Initialization",
+                            "type": "string"
+                        },
+                        "onBeat": {
+                            "title": "On Beat",
+                            "type": "string"
+                        },
+                        "perFrame": {
+                            "title": "Per Frame",
+                            "type": "string"
+                        },
+                        "perPixel": {
+                            "title": "Per Pixel",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "options": {
+            "fields": {
+                "noGrid": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "Disable interpolation",
+                },
+                "gridW": {
+                    "size": 4,
+                    "dependencies": {
+                        "noGrid": false
+                    }
+                },
+                "gridH": {
+                    "size": 4,
+                    "dependencies": {
+                        "noGrid": false
+                    }
+                },
+                "blend": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "Blend output",
+                },
+                "compat": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "AVS compaibility mode",
+                },
+                "bFilter": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "Bilinear filtering",
+                },
+                "code": {
+                    "collapsed": true,
+                    "fields": {
+                        "init": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "onBeat": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "perFrame": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        },
+                        "perPixel": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea"
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    FormDefs.EffectList = {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "output": {
+                    "title": "Output blend mode",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.EffectList.ELBlendModes)
+                },
+                "input": {
+                    "title": "Input blend mode",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.EffectList.ELBlendModes)
+                },
+                "clearFrame": {
+                    "title": "Clear every frame",
+                    "type": "boolean"
+                },
+                "enableOnBeat": {
+                    "title": "Enable only on beat",
+                    "type": "boolean"
+                },
+                "enableOnBeatFor": {
+                    "title": "Enable frame count",
+                    "type": "integer",
+                    "minimum": 1,
+                    "dependencies": "enableOnBeat"
+                },
+                "code": {
+                    "title": "Code",
+                    "type": "object",
+                    "properties": {
+                        "init": {
+                            "title": "Initialization",
+                            "type": "string"
+                        },
+                        "perFrame": {
+                            "title": "Per Frame",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "options": {
+            "fields": {
+                "clearFrame": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "Clear every frame"
+                },
+                "enableOnBeat": {
+                    "fieldClass": "alpaca-no-label",
+                    "rightLabel": "Enable only on beat"
+                },
+                "enableOnBeatFor": {
+                    "size": 4,
+                    "dependencies": {
+                        "enableOnBeat": true
+                    }
+                },
+                "code": {
+                    "collapsed": true,
+                    "fields": {
+                        "init": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea",
+                        },
+                        "perFrame": {
+                            "fieldClass": "alpaca-code-textarea",
+                            "type": "textarea",
+                        }
+                    }
                 }
             }
         }

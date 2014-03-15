@@ -20,7 +20,7 @@ body {
 }
 
 .webvsed-sidebar {
-    width: 100px;
+    width: 200px;
     height: 100%;
     overflow: hidden;
 }
@@ -53,4 +53,12 @@ body {
 
 .webvsed-tree ul .jqtree-element {
     padding: 3px;
+}
+
+.alpaca-no-label .alpaca-controlfield-label {
+    display: none;
+}
+
+.alpaca-code-textarea textarea {
+    font-family: monospace;
 }
