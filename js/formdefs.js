@@ -217,6 +217,44 @@
         }
     };
 
+    FormDefs.BufferSave = {
+        "schema": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "title": "Action",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.BufferSave.Actions)
+                },
+                "bufferId": {
+                    "title": "Buffer index",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "blendMode": {
+                    "title": "Output blend mode",
+                    "required": true,
+                    "enum": getEnumKeys(Webvs.BlendModes)
+                },
+            }
+        },
+        "options": {
+            "fields": {
+                "bufferId": {
+                    "size": 4,
+                },
+                "action": {
+                    "optionLabels": {
+                        "SAVE": "Save",
+                        "RESTORE": "Restore",
+                        "SAVERESTORE": "Save and Restore",
+                        "RESTORESAVE": "Restore and Save"
+                    }
+                }
+            }
+        }
+    };
+
     FormDefs.EffectList = {
         "schema": {
             "type": "object",

@@ -4,6 +4,11 @@ body {
     overflow: hidden;
 }
 
+.webvsed-ctxmenu {
+    min-width: 100px;
+    font-size: 12px;
+}
+
 .webvsed-box {
     border: 1px solid black;
     font-size: 12px;

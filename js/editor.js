@@ -34,6 +34,16 @@
             ].join(""));
             this.element.append(box);
 
+            var tabCtxMenu = $([
+                "<ul class='webvsed-ctxmenu'>",
+                "    <li class='webvsed-tabctx-popout'><a href='#'><span class='ui-icon ui-icon-extlink'></span>Popout</a></li>",
+                "    <li class='webvsed-tabctx-close'><a href='#'><span class='ui-icon ui-icon-close'></span>Close</a></li>",
+                "</ul>"
+            ].join(""));
+            tabCtxMenu.menu().hide().css("position", "absolute");
+            $("body").append(tabCtxMenu);
+
+            this.tabCtxMenu = tabCtxMenu;
             this.box = box;
             this.row1 = box.children(".webvsed-row1");
             this.row2 = box.children(".webvsed-row2");
@@ -44,7 +54,7 @@
             this.pane = this.row2.children(".webvsed-pane");
             this.tabs = this.pane.find(".webvsed-tabs");
             this.tabList = this.tabs.children("ul");
-            
+
             this.sidebar.resizable({
                 handles: "e"
             });
@@ -58,8 +68,8 @@
 
             this._fixDimensions();
 
-            this.selectNode("root");
-            this.showTab(this.tree.tree("getNodeById", "root"));
+            this._treeSelectNode("root");
+            this._showTab(this.tree.tree("getNodeById", "root"));
         },
 
         _buildTree: function(component) {
@@ -67,7 +77,7 @@
             if(component.id == "root") {
                 label = "Main";
             } else {
-                label = Webvs.getComponentClassName(component.constructor);
+                label = component.id;
             }
             var node = {
                 id: component.id,
@@ -95,30 +105,51 @@
         _bind: function() {
             var this_ = this;
 
+            // show context menu on tabs
+            this.tabList.on("contextmenu", "li", function(event) {
+                this_._showTabCtxMenu($(this), event.pageX, event.pageY);
+                event.preventDefault();
+            });
+
+            // hide context menu on click anywhere
+            $("body").on("click", function(event) {
+                this_.tabCtxMenu.hide();
+            });
+
+            // close tab
+            this.tabCtxMenu.children(".webvsed-tabctx-close").on("click", function() {
+                this_._closeTab(this_._tabCtxMenuCurrentTab);
+            });
+
+            // fix dimensions when sidebar is resized
             this.sidebar.on("resize", function() {
                 this_._fixDimensions();
             });
 
+            // show tab when tree item is selected
             this.tree.on("tree.select", function(event) {
                 if(event.node) {
-                    this_.showTab(event.node);
+                    this_._showTab(event.node);
                 }
             });
 
+            // select tree item when tab is selected
             this.tabs.on("tabsactivate", function(event, ui) {
-                this_.selectNode(ui.newTab.data("webvsedComponentId"));
+                this_._treeSelectNode(ui.newTab.data("webvsedComponentId"));
             });
 
+            // set option in webvs when form value changes
             this.tabs.on("change", ".webvsed-form", function(event) {
-                this_.setWebvsOption($(this), $(event.target));
-            });
-
-            this.tabList.on("click", ".webvsed-tabclose", function() {
-                this_.closeTab($(this).parent());
+                this_._setWebvsOption($(this), $(event.target));
             });
         },
 
-        setWebvsOption: function(form, field) {
+        _showTabCtxMenu: function(tab, x, y) {
+            this._tabCtxMenuCurrentTab = tab;
+            this.tabCtxMenu.css({left: x, top: y}).show();
+        },
+
+        _setWebvsOption: function(form, field) {
             var componentId = form.parent().data("webvsedComponentId");
             var node = this.tree.tree("getNodeById", componentId);
 
@@ -132,7 +163,7 @@
             node.component.setOption(path.join("."), value);
         },
 
-        selectNode: function(id) {
+        _treeSelectNode: function(id) {
             if(this.tree.tree("getSelectedNode").id == id) {
                 return;
             }
@@ -140,7 +171,7 @@
             this.tree.tree("selectNode", node);
         },
 
-        closeTab: function(tab) {
+        _closeTab: function(tab) {
             var componentId = tab.data("webvsedComponentId");
             tab.remove();
             $("#webvsed-"+componentId).remove();
@@ -150,38 +181,36 @@
             if(this.tree.tree("getSelectedNode").id == componentId && this._openTabs.length > 0) {
                 index = Math.min(index, this._openTabs.length-1);
                 this.tabs.tabs({active: index});
-                this.selectNode(this._openTabs[index]);
+                this._treeSelectNode(this._openTabs[index]);
             }
         },
 
-        showTab: function(node) {
+        _showTab: function(node) {
             if(this._openTabs.indexOf(node.id) != -1) {
+                // switch to open tab
+                var index = $("#webvsed-"+node.id).index()-1;
+                this.tabs.tabs("option", "active", index);
                 return;
             }
-            var tab = "<li data-webvsed-component-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a>";
-            if(node.id != "root") {
-                tab += "<span class='webvsed-tabclose ui-icon ui-icon-close'></span>";
-            }
-            tab += "</li>";
-            this.tabList.append($(tab));
 
+            // create the tab
+            this.tabList.append("<li data-webvsed-component-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a></li>");
+
+            // create the tab pane
             var componentClass = Webvs.getComponentClassName(node.component.constructor);
             if(componentClass in webvsFormdefs) {
                 var tabContent = $("<div data-webvsed-component-id='"+node.id+"' id='webvsed-"+node.id+"'><div class='webvsed-form'></div></div>");
                 this.tabs.append(tabContent);
-
-                var alpacaOpts = {
-                    data: node.component.opts
-                };
+                var alpacaOpts = { data: node.component.opts };
                 $.extend(alpacaOpts, webvsFormdefs[componentClass]);
                 tabContent.find(".webvsed-form").alpaca(alpacaOpts);
             } else {
-                this.tabs.append("<div id='webvsed-"+node.id+"'>SOme empty content here</div>");
+                this.tabs.append("<div id='webvsed-"+node.id+"'>UI not defined</div>");
             }
             
-
+            // refresh and set the active tab
             this.tabs.tabs("refresh");
-            this.tabs.tabs({active: this._openTabs.length});
+            this.tabs.tabs("option", "active", this._openTabs.length);
             this._openTabs.push(node.id);
         }
     });
