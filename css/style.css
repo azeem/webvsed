@@ -9,6 +9,14 @@ body {
     font-size: 12px;
 }
 
+.ui-tabs-nav li.webvsed-panelstate-active {
+    background: #B5DFFC none;
+}
+
+.ui-dialog.webvsed-panelstate-active .ui-dialog-titlebar {
+    background: #B5DFFC none;
+}
+
 .webvsed-box {
     border: 1px solid black;
     font-size: 12px;
@@ -66,4 +74,5 @@ body {
 
 .alpaca-code-textarea textarea {
     font-family: monospace;
+    width: 90%;
 }

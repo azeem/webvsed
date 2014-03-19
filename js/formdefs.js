@@ -4,7 +4,7 @@
 
     function getEnumKeys(obj) {
         var keys = [];
-        for(key in obj) {
+        for(var key in obj) {
             if(obj.hasOwnProperty(key)) {
                 keys.push(key);
             }
