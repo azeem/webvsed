@@ -67,6 +67,7 @@
                 handles: "e"
             });
             this.tree.tree({
+                autoOpen: 2,
                 data:[this._buildTree(this.options.webvsMain.rootComponent)]
             });
 
@@ -103,11 +104,17 @@
             this.tree.on("tree.contextmenu", function(event) {
                 this_._showTreeCtxMenu(event.node, event.click_event.pageX, event.click_event.pageY);
             });
+            this.treeCtxMenu.on("click", ".webvsed-treectx-insert", function() {
+                this_._addNewComponent($(this).data("componentName"), this_.menuBoundNode);
+            });
+
 
             // Hide all context menus
             $("body").on("click", function(event) {
                 this_.tabCtxMenu.hide();
                 this_.treeCtxMenu.hide();
+                this_.menuBoundNode = null;
+                this_.menuBoundTab = null;
             });
 
             // fix dimensions when sidebar is resized
@@ -160,8 +167,10 @@
         _buildTreeMenu: function() {
             var treeCtxMenu = $([
                 "<ul class='webvsed-ctxmenu'>",
-                "    <li class='webvsed-treectx-insert'><a href='#'><span class='ui-icon ui-icon-extlink'></span>Add New</a><li>",
-                "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-close'></span>Remove</a></li>",
+                "    <li><a href='#'><span class='ui-icon ui-icon-plus'></span>Add New</a></li>",
+                "    <li class='webvsed-treectx-toggle-enable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
+                "    <li class='webvsed-treectx-set-name'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set Name</a></li>",
+                "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
                 "</ul>"
             ].join(""));
 
@@ -175,14 +184,14 @@
                     var subMenuClass = "webvsed-insertmenu-" + this._slugify(path[i]);
                     var subMenu = menuLoc.find("."+subMenuClass);
                     if(subMenu.length === 0) {
-                        var newSubMenu = $("<li><a href='#'>"+path[i]+"</a><ul class='"+subMenuClass+"'></ul></li>");
+                        var newSubMenu = $("<li><a href='#'><span class='ui-icon ui-icon-suitcase'></span>"+path[i]+"</a><ul class='"+subMenuClass+"'></ul></li>");
                         menuLoc.append(newSubMenu);
                         subMenu = newSubMenu.children(":eq(1)");
                     }
                     menuLoc = subMenu;
                 }
 
-                var newItem = $("<li><a href='#'>"+name+"</a></li>");
+                var newItem = $("<li class='webvsed-treectx-insert'><a href='#'><span class='ui-icon ui-icon-gear'></span>"+name+"</a></li>");
                 newItem.data("componentName", name);
                 menuLoc.append(newItem);
             }
@@ -252,6 +261,26 @@
 
             var value = Alpaca(form.get()).getControlByPath(path.join("/")).getValue();
             node.component.setOption(path.join("."), value);
+        },
+
+        _addNewComponent: function(componentName, node) {
+            var parentComponent, pos, treeMethod;
+            if(node.component instanceof Webvs.Container) {
+                parentComponent = node.component;
+                pos = null;
+                treeMethod = "appendNode";
+            } else {
+                parentComponent = node.component.parent;
+                pos = node.parent.children.indexOf(node);
+                treeMethod = "addNodeBefore";
+            }
+            var component = parentComponent.addComponent({type: componentName}, pos);
+            var newNode = {
+                id: component.id,
+                label: component.id,
+                component: component
+            };
+            this.tree.tree(treeMethod, newNode, node);
         },
 
         _activatePanel: function(id) {
