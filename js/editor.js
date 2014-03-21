@@ -108,6 +108,13 @@
             // Tree context menu events
             this.tree.on("tree.contextmenu", function(event) {
                 webvsed.treeCtxMenuNode = event.node;
+                if(event.node.component.enabled) {
+                    webvsed.treeCtxMenu.find(".webvsed-treectx-enable").hide();
+                    webvsed.treeCtxMenu.find(".webvsed-treectx-disable").show();
+                } else {
+                    webvsed.treeCtxMenu.find(".webvsed-treectx-enable").show();
+                    webvsed.treeCtxMenu.find(".webvsed-treectx-disable").hide();
+                }
                 webvsed.treeCtxMenu.css({left: event.click_event.pageX, top: event.click_event.pageY}).show();
             });
             this.treeCtxMenu.on("click", ".webvsed-treectx-insert", function() {
@@ -115,6 +122,9 @@
             });
             this.treeCtxMenu.on("click", ".webvsed-treectx-remove", function() {
                 webvsed._removeComponent(webvsed.treeCtxMenuNode);
+            });
+            this.treeCtxMenu.on("click", ".webvsed-treectx-enable,.webvsed-treectx-disable", function(event) {
+                webvsed._toggleComponentEnable(webvsed.treeCtxMenuNode);
             });
 
 
@@ -178,7 +188,8 @@
             var treeCtxMenu = $([
                 "<ul class='webvsed-ctxmenu'>",
                 "    <li><a href='#'><span class='ui-icon ui-icon-plus'></span>Add New</a></li>",
-                "    <li class='webvsed-treectx-toggle-enable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
+                "    <li class='webvsed-treectx-disable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
+                "    <li class='webvsed-treectx-enable'><a href='#'><span class='ui-icon ui-icon-play'></span>Enable</a></li>",
                 "    <li class='webvsed-treectx-set-name'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set Name</a></li>",
                 "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
                 "</ul>"
@@ -289,6 +300,16 @@
             component.destroy();
             this.tree.tree("removeNode", node);
             this._closePanel(node.id);
+        },
+
+        _toggleComponentEnable: function(node) {
+            console.dir(node);
+            node.component.enabled = !node.component.enabled;
+            if(node.component.enabled) {
+                $(node.element).removeClass("webvsed-tree-node-disabled");
+            } else {
+                $(node.element).addClass("webvsed-tree-node-disabled");
+            }
         },
 
         _activatePanel: function(id) {

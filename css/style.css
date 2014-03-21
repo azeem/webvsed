@@ -68,6 +68,10 @@ body {
     padding: 3px;
 }
 
+.webvsed-tree .webvsed-tree-node-disabled .jqtree-title {
+    color: red;
+}
+
 .alpaca-no-label .alpaca-controlfield-label {
     display: none;
 }
