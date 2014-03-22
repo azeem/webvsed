@@ -128,6 +128,9 @@
             this.treeCtxMenu.on("click", ".webvsed-treectx-enable,.webvsed-treectx-disable", function(event) {
                 webvsed._toggleComponentEnable(webvsed.treeCtxMenuNode);
             });
+            this.treeCtxMenu.on("click", ".webvsed-treectx-set-id", function(event) {
+                webvsed._setComponentId(webvsed.treeCtxMenuNode);
+            });
 
 
             // Hide all context menus
@@ -189,7 +192,7 @@
                 "    <li><a href='#'><span class='ui-icon ui-icon-plus'></span>Add New</a></li>",
                 "    <li class='webvsed-treectx-disable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
                 "    <li class='webvsed-treectx-enable'><a href='#'><span class='ui-icon ui-icon-play'></span>Enable</a></li>",
-                "    <li class='webvsed-treectx-set-name'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set Name</a></li>",
+                "    <li class='webvsed-treectx-set-id'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set ID</a></li>",
                 "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
                 "</ul>"
             ].join(""));
@@ -314,6 +317,37 @@
             }
         },
 
+        _setComponentId: function(node) {
+            var message = "Enter new ID for " + node.component.id;
+            var newId;
+            while(true) {
+                newId = window.prompt(message);
+                if(!newId) {
+                    return;
+                }
+                newId = $.trim(newId);
+                if(!newId.match(/^[\w\d_-]+$/)) {
+                    message = ["ID should contain only alphanumeric, underscore or minus",
+                               "Enter new ID for " + node.component.id].join("\n");
+                } else {
+                    break;
+                }
+            }
+
+            node.component.id = newId;
+            this.tree.tree("updateNode", node, newId);
+
+            // update tab/dialog title if open
+            var panelInfo = this.panelInfo[node.id];
+            if(panelInfo) {
+                if(panelInfo.tab) {
+                    panelInfo.tab.children().text(newId);
+                } else {
+                    panelInfo.panel.dialog("option", "title", newId);
+                }
+            }
+        },
+
         _activatePanel: function(id) {
             var panelInfo;
             if(id) {
@@ -368,6 +402,8 @@
                 panelInfo.panel.remove();
                 panelInfo.tab.remove();
                 this.tabs.tabs("refresh");
+            } else {
+                panelInfo.panel.dialog("destroy").remove();
             }
 
             this.panelInfo[id] = undefined;
