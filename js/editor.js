@@ -71,6 +71,17 @@
             });
             this.tree.tree({
                 autoOpen: 2,
+                dragAndDrop: true,
+                onCanMove: function(node) {
+                    return node.component.id != "root";
+                },
+                onCanMoveTo: function(movedNode, targetNode, position) {
+                    if(position == "inside") {
+                        return (targetNode.component instanceof Webvs.Container);
+                    } else {
+                        return (targetNode.component.id != "root");
+                    }
+                },
                 data:[this._buildTree(this.options.webvsMain.rootComponent)]
             });
 
@@ -151,6 +162,10 @@
                 if(event.node) {
                     webvsed._showPanel(event.node);
                 }
+            });
+
+            this.tree.on("tree.move", function(event) {
+                webvsed._moveComponent(event.move_info);
             });
 
             // select tree item when tab is selected
@@ -308,7 +323,6 @@
         },
 
         _toggleComponentEnable: function(node) {
-            console.dir(node);
             node.component.enabled = !node.component.enabled;
             if(node.component.enabled) {
                 $(node.element).removeClass("webvsed-tree-node-disabled");
@@ -346,6 +360,25 @@
                     panelInfo.panel.dialog("option", "title", newId);
                 }
             }
+        },
+
+        _moveComponent: function(moveInfo) {
+            var component = moveInfo.moved_node.component;
+            var prevParent = moveInfo.previous_parent.component;
+            var newParent, pos;
+            if(moveInfo.position == "inside") {
+                newParent = moveInfo.target_node.component;
+                pos = null;
+            } else {
+                newParent = moveInfo.target_node.component.parent;
+                var targetNode = moveInfo.target_node;
+                pos = targetNode.parent.children.indexOf(targetNode);
+                if(moveInfo.position == "after") {
+                    pos++;
+                }
+            }
+            prevParent.detachComponent(component.id);
+            newParent.addComponent(component, pos);
         },
 
         _activatePanel: function(id) {
