@@ -9,6 +9,8 @@
         _create: function() {
             this.panelInfo = {};
             this.panelOrder = [];
+            this.idCounter = 1000;
+            this.rootNodeId = null;
 
             this._renderUI();
             this._bind();
@@ -78,7 +80,7 @@
 
             this._fixDimensions();
 
-            this._showPanel(this.tree.tree("getNodeById", "root"));
+            this._showPanel(this.tree.tree("getNodeById", this.rootNodeId));
         },
 
         /**
@@ -91,7 +93,7 @@
             this.tabList.on("contextmenu", "li", function(event) {
                 var tab = $(this);
                 if(tab.index() !== 0) {
-                    webvsed.tabCtxMenuPanel = tab.data("webvsedComponentId");
+                    webvsed.tabCtxMenuPanel = tab.data("webvsedNodeId");
                     webvsed.tabCtxMenu.css({left: event.pageX, top: event.pageY}).show();
                 }
                 event.preventDefault();
@@ -151,27 +153,24 @@
             // select tree item when tab is selected
             this.tabs.on("tabsactivate", function(event, ui) {
                 if(event.originalEvent) { // don't run for tabs refresh
-                    webvsed._activatePanel(ui.newTab.data("webvsedComponentId"));
+                    webvsed._activatePanel(ui.newTab.data("webvsedNodeId"));
                 }
             });
 
             this.box.on("dialogbeforeclose", function(event, ui) {
-                var panel = $(event.target);
-                var id = panel.data("webvsedComponentId");
-                webvsed.panelInfo[id] = undefined;
-                var newActivePanel = webvsed.tabList.children(".ui-state-active").data("webvsedComponentId");
-                webvsed._activatePanel(newActivePanel);
+                var id = $(event.target).data("webvsedNodeId");
+                webvsed._closePanel(id);
             });
 
             // Panel focus events
             this.tabList.on("click", ".ui-state-active", function() {
-                webvsed._activatePanel($(this).data("webvsedComponentId"));
+                webvsed._activatePanel($(this).data("webvsedNodeId"));
             });
             this.box.on("mousedown", ".webvsed-panel", function(event) {
-                webvsed._activatePanel($(this).data("webvsedComponentId"));
+                webvsed._activatePanel($(this).data("webvsedNodeId"));
             });
             this.box.on("mousedown", ".ui-dialog", function(event) {
-                webvsed._activatePanel($(this).find(".webvsed-panel").data("webvsedComponentId"));
+                webvsed._activatePanel($(this).find(".webvsed-panel").data("webvsedNodeId"));
             });
 
             // set option in webvs when form value changes
@@ -231,13 +230,15 @@
          */
         _buildTree: function(component) {
             var label;
+            var id = this.idCounter++;
             if(component.id == "root") {
                 label = "Main";
+                this.rootNodeId = id;
             } else {
                 label = component.id;
             }
             var node = {
-                id: component.id,
+                id: id,
                 component: component,
                 label: label
             };
@@ -263,7 +264,7 @@
         },
 
         _setWebvsOption: function(form, field) {
-            var node = this.tree.tree("getNodeById", form.parent().data("webvsedComponentId"));
+            var node = this.tree.tree("getNodeById", form.parent().data("webvsedNodeId"));
 
             var path = [];
             field.parents(".alpaca-fieldset-item-container").each(function() {
@@ -287,12 +288,13 @@
                 treeMethod = "addNodeBefore";
             }
             var component = parentComponent.addComponent({type: componentName}, pos);
+            var id = this.idCounter++;
             this.tree.tree(treeMethod, {
-                id: component.id,
+                id: id,
                 label: component.id,
                 component: component
             }, node);
-            this._showPanel(this.tree.tree("getNodeById", component.id));
+            this._showPanel(this.tree.tree("getNodeById", id));
         },
 
         _removeComponent: function(node) {
@@ -349,7 +351,7 @@
             panelInfo.tab.remove();
             panelInfo.tab = null;
             panelInfo.panel.dialog({
-                title: id,
+                title: panelInfo.node.name,
                 appendTo: this.box,
                 width: 500,
                 height: 500
@@ -378,11 +380,11 @@
             var panelInfo = this.panelInfo[node.id];
             if(!panelInfo) {
                 // create the tab
-                var tab = $("<li data-webvsed-component-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a></li>");
+                var tab = $("<li data-webvsed-node-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a></li>");
                 this.tabList.append(tab);
 
                 // create the tab panel
-                var panel = $("<div data-webvsed-component-id='"+node.id+"' class='webvsed-panel' id='webvsed-"+node.id+"'></div>");
+                var panel = $("<div data-webvsed-node-id='"+node.id+"' class='webvsed-panel' id='webvsed-"+node.id+"'></div>");
                 this.tabs.append(panel);
 
                 // create form inside tab panel
