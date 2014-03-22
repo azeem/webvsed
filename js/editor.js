@@ -298,7 +298,7 @@
         },
 
         _removeComponent: function(node) {
-            var component = node.component.parent.detachComponent(node.id);
+            var component = node.component.parent.detachComponent(node.component.id);
             component.destroy();
             this.tree.tree("removeNode", node);
             this._closePanel(node.id);
