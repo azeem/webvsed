@@ -20,10 +20,17 @@
          * Builds the UI DOM and initializes it
          */
         _renderUI: function() {
+            // Build main editor
             var box = $([
                 "<div class='webvsed-box'>",
                 "    <div class='webvsed-row1'>",
                 "        <div class='webvsed-toolbar'>",
+                "            <div class='webvsed-buttonset'>",
+                "                <button data-webvsed-icon='ui-icon-plus' class='webvsed-toolbar-insert'>Add New</button>",
+                "                <button data-webvsed-icon='ui-icon-minus' class='webvsed-toolbar-remove'>Remove</button>",
+                "            </div>",
+                "            <button data-webvsed-icon='ui-icon-close' class='webvsed-toolbar-close'>Close</button>",
+                "            <button data-webvsed-icon='ui-icon-extlink' class='webvsed-toolbar-popout'>Popout</button>",
                 "        </div>",
                 "    </div>",
                 "    <div class='webvsed-row2'>",
@@ -40,6 +47,17 @@
             ].join(""));
             this.element.append(box);
 
+            this.box = box;
+            this.row1 = box.children(".webvsed-row1");
+            this.row2 = box.children(".webvsed-row2");
+            this.toolbar = this.row1.children(".webvsed-toolbar");
+            this.sidebar = this.row2.children(".webvsed-sidebar");
+            this.tree = this.sidebar.children(".webvsed-tree");
+            this.pane = this.row2.children(".webvsed-pane");
+            this.tabs = this.pane.find(".webvsed-tabs");
+            this.tabList = this.tabs.children("ul");
+
+            // Build Menus
             var tabCtxMenu = $([
                 "<ul class='webvsed-ctxmenu'>",
                 "    <li class='webvsed-tabctx-popout'><a href='#'><span class='ui-icon ui-icon-extlink'></span>Popout</a></li>",
@@ -47,25 +65,42 @@
                 "</ul>"
             ].join(""));
             tabCtxMenu.menu().hide().css("position", "absolute");
-            $("body").append(tabCtxMenu);
-
-            var treeCtxMenu = this._buildTreeMenu();
+            this.box.append(tabCtxMenu);
+            var addComponentMenu = this._buildAddComponentMenu();
+            var treeCtxMenu = $([
+                "<ul class='webvsed-ctxmenu'>",
+                "    <li><a href='#'><span class='ui-icon ui-icon-plus'></span>Add New</a></li>",
+                "    <li class='webvsed-treectx-disable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
+                "    <li class='webvsed-treectx-enable'><a href='#'><span class='ui-icon ui-icon-play'></span>Enable</a></li>",
+                "    <li class='webvsed-treectx-set-id'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set ID</a></li>",
+                "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
+                "</ul>"
+            ].join(""));
+            treeCtxMenu.children(":eq(0)").append(addComponentMenu.clone());
             treeCtxMenu.menu().hide().css("position", "absolute");
-            $("body").append(treeCtxMenu);
-
+            this.box.append(treeCtxMenu);
+            addComponentMenu.menu().hide().css("position", "absolute");
+            this.box.append(addComponentMenu);
+            this.addComponentMenu = addComponentMenu;
             this.tabCtxMenu = tabCtxMenu;
             this.treeCtxMenu = treeCtxMenu;
-            this.box = box;
-            this.row1 = box.children(".webvsed-row1");
-            this.row2 = box.children(".webvsed-row2");
 
-            this.sidebar = this.row2.children(".webvsed-sidebar");
-            this.tree = this.sidebar.children(".webvsed-tree");
 
-            this.pane = this.row2.children(".webvsed-pane");
-            this.tabs = this.pane.find(".webvsed-tabs");
-            this.tabList = this.tabs.children("ul");
+            // Build Toolbar buttons
+            this.toolbar.find("button").each(function() {
+                var button = $(this);
+                button.button({
+                    icons: {
+                        primary: button.data("webvsedIcon")
+                    },
+                    text: false
+                });
+            });
+            this.toolbar.children(".webvsed-buttonset").each(function() {
+                $(this).buttonset();
+            });
 
+            // Build Sidebar and Tree
             this.sidebar.resizable({
                 handles: "e"
             });
@@ -85,12 +120,13 @@
                 data:[this._buildTree(this.options.webvsMain.rootComponent)]
             });
 
+            // Build Tabs
             this.tabs.tabs({
                 heightStyle: "fill"
             });
 
+            // setup initial state
             this._fixDimensions();
-
             this._showPanel(this.tree.tree("getNodeById", this.rootNodeId));
         },
 
@@ -130,7 +166,7 @@
                 }
                 webvsed.treeCtxMenu.css({left: event.click_event.pageX, top: event.click_event.pageY}).show();
             });
-            this.treeCtxMenu.on("click", ".webvsed-treectx-insert", function() {
+            this.treeCtxMenu.on("click", ".webvsed-component-add", function() {
                 webvsed._addNewComponent($(this).data("componentName"), webvsed.treeCtxMenuNode);
             });
             this.treeCtxMenu.on("click", ".webvsed-treectx-remove", function() {
@@ -146,10 +182,37 @@
 
             // Hide all context menus
             $("body").on("click", function(event) {
+                webvsed.addComponentMenu.hide();
                 webvsed.tabCtxMenu.hide();
                 webvsed.treeCtxMenu.hide();
                 this.tabCtxMenuPanel = null;
                 this.treeCtxMenuNode = null;
+            });
+
+            // toolbar button events
+            this.toolbar.find(".webvsed-toolbar-insert").on("click", function(event) {
+                var button = $(this);
+                var offset = button.offset();
+                offset.top += button.outerHeight();
+                webvsed.addComponentMenu.css({left: offset.left, top: offset.top}).show();
+                event.stopPropagation(); // prevent context menu hide from firing
+            });
+            this.toolbar.find(".webvsed-toolbar-remove").on("click", function(event) {
+                webvsed._removeComponent(webvsed._getCurrentPanelInfo().node);
+            });
+            this.toolbar.find(".webvsed-toolbar-close").on("click", function() {
+                var panelId = webvsed._getCurrentPanelInfo().node.id;
+                webvsed._closePanel(panelId);
+            });
+            this.toolbar.find(".webvsed-toolbar-popout").on("click", function() {
+                var panelId = webvsed._getCurrentPanelInfo().node.id;
+                webvsed._popoutPanel(panelId);
+            });
+
+            // toolbar insert menu
+            this.addComponentMenu.on("click", ".webvsed-component-add", function() {
+                var node = webvsed._getCurrentPanelInfo().node;
+                webvsed._addNewComponent($(this).data("componentName"), node);
             });
 
             // fix dimensions when sidebar is resized
@@ -197,22 +260,16 @@
             });
         },
 
+        _getCurrentPanelInfo: function() {
+            return this.panelInfo[this.panelOrder[this.panelOrder.length-1]];
+        },
+
         _slugify: function(str) {
             return $.trim(str).toLowerCase().replace(/\s+/, "_");
         },
 
-        _buildTreeMenu: function() {
-            var treeCtxMenu = $([
-                "<ul class='webvsed-ctxmenu'>",
-                "    <li><a href='#'><span class='ui-icon ui-icon-plus'></span>Add New</a></li>",
-                "    <li class='webvsed-treectx-disable'><a href='#'><span class='ui-icon ui-icon-pause'></span>Disable</a></li>",
-                "    <li class='webvsed-treectx-enable'><a href='#'><span class='ui-icon ui-icon-play'></span>Enable</a></li>",
-                "    <li class='webvsed-treectx-set-id'><a href='#'><span class='ui-icon ui-icon-pencil'></span>Set ID</a></li>",
-                "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
-                "</ul>"
-            ].join(""));
-
-            var insertMenu = $("<ul></ul>");
+        _buildAddComponentMenu: function() {
+            var addMenu = $("<ul class='webvsed-ctxmenu'></ul>");
             // Create a menu fom Webvs ComponentRegistry entries
             for(var name in Webvs.ComponentRegistry) {
                 var componentClass = Webvs.ComponentRegistry[name];
@@ -221,7 +278,7 @@
 
                 // find the the list where the item will be inserted
                 // creating nonexisting entries on the way
-                var menuLoc = insertMenu;
+                var menuLoc = addMenu;
                 for(var i = 0;i < path.length;i++) {
                     var subMenuClass = "webvsed-insertmenu-" + this._slugify(path[i]);
                     var subMenu = menuLoc.find("."+subMenuClass);
@@ -233,14 +290,11 @@
                     menuLoc = subMenu;
                 }
 
-                var newItem = $("<li class='webvsed-treectx-insert'><a href='#'><span class='ui-icon ui-icon-gear'></span>"+name+"</a></li>");
+                var newItem = $("<li class='webvsed-component-add'><a href='#'><span class='ui-icon ui-icon-gear'></span>"+name+"</a></li>");
                 newItem.data("componentName", name);
                 menuLoc.append(newItem);
             }
-
-            treeCtxMenu.children(":eq(0)").append(insertMenu);
-
-            return treeCtxMenu;
+            return addMenu;
         },
 
         /**
@@ -267,6 +321,12 @@
                 }
             }
             return node;
+        },
+
+        _showTreeCtxMenu: function(node, pageX, pageY) {
+            console.dir(node);
+            console.dir(pageX);
+            console.dir(pageY);
         },
 
         /**
@@ -316,6 +376,9 @@
         },
 
         _removeComponent: function(node) {
+            if(!window.confirm("Remove '" + node.name + "'?")) {
+                return;
+            }
             var component = node.component.parent.detachComponent(node.component.id);
             component.destroy();
             this.tree.tree("removeNode", node);
@@ -365,13 +428,13 @@
         _moveComponent: function(moveInfo) {
             var component = moveInfo.moved_node.component;
             var prevParent = moveInfo.previous_parent.component;
+            var targetNode = moveInfo.target_node;
             var newParent, pos;
             if(moveInfo.position == "inside") {
-                newParent = moveInfo.target_node.component;
+                newParent = targetNode.component;
                 pos = null;
             } else {
-                newParent = moveInfo.target_node.component.parent;
-                var targetNode = moveInfo.target_node;
+                newParent = targetNode.component.parent;
                 pos = targetNode.parent.children.indexOf(targetNode);
                 if(moveInfo.position == "after") {
                     pos++;
@@ -407,6 +470,15 @@
 
             // select tree node
             this.tree.tree("selectNode", panelInfo.node);
+
+            // set toolbar button states
+            this.toolbar.find("button").button("option", "disabled", false);
+            if(panelInfo.node.id == this.rootNodeId) {
+                this.toolbar.find(".webvsed-toolbar-remove,.webvsed-toolbar-close,.webvsed-toolbar-popout").button("option", "disabled", true);
+            }
+            if(!panelInfo.tab) {
+                this.toolbar.find(".webvsed-toolbar-popout").button("option", "disabled", true);
+            }
         },
 
         _popoutPanel: function(id) {

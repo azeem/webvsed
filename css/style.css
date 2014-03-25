@@ -20,22 +20,30 @@ body {
 .webvsed-box {
     border: 1px solid black;
     font-size: 12px;
-    padding: 5px;
+    padding: 0px 5px 5px 5px;
 }
 
 .webvsed-row1 {
-    height: 32px;
-    width: 100%;
+    padding: 5px 0px;
 }
 
 .webvsed-row2 {
     width: 100%;
 }
 
+.webvsed-toolbar {
+    padding: 2px;
+}
+
+.webvsed-toolbar .webvsed-buttonset {
+    display: inline;
+}
+
 .webvsed-sidebar {
     width: 200px;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .webvsed-pane {
