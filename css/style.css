@@ -88,3 +88,8 @@ body {
     font-family: monospace;
     width: 90%;
 }
+
+.webvsed-default-form .alpaca-controlfield-textarea textarea {
+    width: 100%;
+    height: 250px;
+}

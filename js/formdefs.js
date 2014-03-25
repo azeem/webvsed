@@ -12,6 +12,16 @@
         return keys;
     }
 
+    FormDefs.Default = {
+        "schema": {
+            "type": "string",
+            "title": "Options (JSON)"
+        },
+        "options": {
+            "type": "json"
+        }
+    };
+
     FormDefs.SuperScope = {
         "schema": {
             "type": "object",

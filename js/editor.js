@@ -256,7 +256,7 @@
 
             // set option in webvs when form value changes
             this.box.on("change", ".webvsed-form", function(event) {
-                webvsed._setWebvsOption($(this), $(event.target));
+                webvsed._updateComponent($(this), $(event.target));
             });
         },
 
@@ -323,12 +323,6 @@
             return node;
         },
 
-        _showTreeCtxMenu: function(node, pageX, pageY) {
-            console.dir(node);
-            console.dir(pageX);
-            console.dir(pageY);
-        },
-
         /**
          * Fixes the dimensions of the sidebar and panes
          */
@@ -341,17 +335,30 @@
             this.pane.css("width", this.row2.width()-this.sidebar.outerWidth());
         },
 
-        _setWebvsOption: function(form, field) {
+        _updateComponent: function(form, field) {
             var node = this.tree.tree("getNodeById", form.parent().data("webvsedNodeId"));
+            if(form.hasClass("webvsed-default-form")) {
+                var json = Alpaca(form.get()).getValue();
+                var pos = node.parent.children.indexOf(node);
 
-            var path = [];
-            field.parents(".alpaca-fieldset-item-container").each(function() {
-                path.push($(this).data("alpacaItemContainerItemKey"));
-            });
-            path.reverse();
+                var parent = node.component.parent;
+                parent.detachComponent(node.component.id);
+                var newComponent = parent.addComponent(json, pos);
 
-            var value = Alpaca(form.get()).getControlByPath(path.join("/")).getValue();
-            node.component.setOption(path.join("."), value);
+                this.tree.tree("updateNode", node, {
+                    component: newComponent
+                });
+
+                this._setComponentId(node, newComponent.id);
+            } else {
+                var path = [];
+                field.parents(".alpaca-fieldset-item-container").each(function() {
+                    path.push($(this).data("alpacaItemContainerItemKey"));
+                });
+                path.reverse();
+                var value = Alpaca(form.get()).getControlByPath(path.join("/")).getValue();
+                node.component.setOption(path.join("."), value);
+            }
         },
 
         _addNewComponent: function(componentName, node) {
@@ -394,20 +401,22 @@
             }
         },
 
-        _setComponentId: function(node) {
-            var message = "Enter new ID for " + node.component.id;
-            var newId;
-            while(true) {
-                newId = window.prompt(message);
-                if(!newId) {
-                    return;
-                }
-                newId = $.trim(newId);
-                if(!newId.match(/^[\w\d_-]+$/)) {
-                    message = ["ID should contain only alphanumeric, underscore or minus",
-                               "Enter new ID for " + node.component.id].join("\n");
-                } else {
-                    break;
+        _setComponentId: function(node, newId) {
+            if(!newId) {
+                var message = "Enter new ID for " + node.component.id;
+                var newId;
+                while(true) {
+                    newId = window.prompt(message);
+                    if(!newId) {
+                        return;
+                    }
+                    newId = $.trim(newId);
+                    if(!newId.match(/^[\w\d_-]+$/)) {
+                        message = ["ID should contain only alphanumeric, underscore or minus",
+                                   "Enter new ID for " + node.component.id].join("\n");
+                    } else {
+                        break;
+                    }
                 }
             }
 
@@ -530,13 +539,16 @@
 
                 // create form inside tab panel
                 var componentClass = node.component.constructor.Meta.name;
+                var form = $("<div class='webvsed-form'></div>");
+                var alpacaOpts;
                 if(componentClass in webvsFormdefs) {
-                    var alpacaOpts = $.extend({data: node.component.opts}, webvsFormdefs[componentClass]);
-                    var form = $("<div class='webvsed-form'></div>");
-                    form.appendTo(panel).alpaca(alpacaOpts);
+                    alpacaOpts = $.extend({data: node.component.opts}, webvsFormdefs[componentClass]);
                 } else {
-                    panel.append("<p>Form Definition Not Found</o>");
+                    var json = node.component.generateOptionsObj();
+                    alpacaOpts = $.extend({data: JSON.stringify(json)}, webvsFormdefs["Default"]);
+                    form.addClass("webvsed-default-form");
                 }
+                form.appendTo(panel).alpaca(alpacaOpts);
 
                 this.panelInfo[node.id] = {
                     node: node,
