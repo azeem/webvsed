@@ -29,8 +29,8 @@
                 "                <button data-webvsed-icon='ui-icon-plus' class='webvsed-toolbar-insert'>Add New</button>",
                 "                <button data-webvsed-icon='ui-icon-minus' class='webvsed-toolbar-remove'>Remove</button>",
                 "            </div>",
-                "            <button data-webvsed-icon='ui-icon-close' class='webvsed-toolbar-close'>Close</button>",
-                "            <button data-webvsed-icon='ui-icon-extlink' class='webvsed-toolbar-pop'>Popout</button>",
+                "            <button data-webvsed-icon='ui-icon-close' class='webvsed-toolbar-close'>Close Panel</button>",
+                "            <button data-webvsed-icon='ui-icon-extlink' class='webvsed-toolbar-pop'>Pop Out</button>",
                 "        </div>",
                 "    </div>",
                 "    <div class='webvsed-row2'>",
@@ -76,7 +76,7 @@
                 "    <li class='webvsed-treectx-remove'><a href='#'><span class='ui-icon ui-icon-minus'></span>Remove</a></li>",
                 "</ul>"
             ].join(""));
-            treeCtxMenu.children(":eq(0)").append(addComponentMenu.clone());
+            treeCtxMenu.children(":eq(0)").append(addComponentMenu.clone(true, true));
             treeCtxMenu.menu().hide().css("position", "absolute");
             this.box.append(treeCtxMenu);
             addComponentMenu.menu().hide().css("position", "absolute");
@@ -140,7 +140,7 @@
             this.tabList.on("contextmenu", "li", function(event) {
                 var tab = $(this);
                 if(tab.index() !== 0) {
-                    webvsed._showPanelCtxMenu(tab.data("webvsedNodeId"), event.pageX, event.pageY)
+                    webvsed._showPanelCtxMenu(tab.data("webvsedNodeId"), event.pageX, event.pageY);
                 }
                 event.preventDefault();
             });
@@ -243,7 +243,7 @@
                 webvsed._closePanel(id);
             });
             this.box.on("contextmenu", ".ui-dialog .ui-dialog-titlebar", function(event) {
-                webvsed._showPanelCtxMenu($(this).next().data("webvsedNodeId"), event.pageX, event.pageY)
+                webvsed._showPanelCtxMenu($(this).next().data("webvsedNodeId"), event.pageX, event.pageY);
                 event.preventDefault();
             });
 
@@ -420,7 +420,6 @@
         _setComponentId: function(node, newId) {
             if(!newId) {
                 var message = "Enter new ID for " + node.component.id;
-                var newId;
                 while(true) {
                     newId = window.prompt(message);
                     if(!newId) {
@@ -568,7 +567,7 @@
                     alpacaOpts = $.extend({data: node.component.opts}, webvsFormdefs[componentClass]);
                 } else {
                     var json = node.component.generateOptionsObj();
-                    alpacaOpts = $.extend({data: JSON.stringify(json)}, webvsFormdefs["Default"]);
+                    alpacaOpts = $.extend({data: JSON.stringify(json)}, webvsFormdefs.Default);
                     form.addClass("webvsed-default-form");
                 }
                 form.appendTo(panel).alpaca(alpacaOpts);

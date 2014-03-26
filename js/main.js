@@ -1,5 +1,5 @@
 (function() {
-var samplePreset = {
+/*var samplePreset = {
     name : "Jello Cube",
     author : "Steven Wittens / UnConeD (http://acko.net)",
     clearFrame : false,
@@ -161,7 +161,7 @@ var samplePreset = {
             ]
         }
     ]
-};
+};*/
 
 $(document).ready(function() {
     var analyser = new Webvs.WebAudioAnalyser();
@@ -169,7 +169,6 @@ $(document).ready(function() {
         canvas: $("#canvas").get(0),
         analyser: analyser
     });
-    webvsMain.loadPreset(samplePreset);
     webvsMain.start();
 
     $("#editor").webvseditor({
