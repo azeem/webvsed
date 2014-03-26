@@ -4,6 +4,10 @@ body {
     overflow: hidden;
 }
 
+.webvsed-ctxmenu {
+    z-index: 1000;
+}
+
 .webvsed-ctxmenu .ui-menu-item {
     min-width: 100px;
     font-size: 12px;

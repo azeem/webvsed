@@ -30,7 +30,7 @@
                 "                <button data-webvsed-icon='ui-icon-minus' class='webvsed-toolbar-remove'>Remove</button>",
                 "            </div>",
                 "            <button data-webvsed-icon='ui-icon-close' class='webvsed-toolbar-close'>Close</button>",
-                "            <button data-webvsed-icon='ui-icon-extlink' class='webvsed-toolbar-popout'>Popout</button>",
+                "            <button data-webvsed-icon='ui-icon-extlink' class='webvsed-toolbar-pop'>Popout</button>",
                 "        </div>",
                 "    </div>",
                 "    <div class='webvsed-row2'>",
@@ -58,14 +58,14 @@
             this.tabList = this.tabs.children("ul");
 
             // Build Menus
-            var tabCtxMenu = $([
+            var panelCtxMenu = $([
                 "<ul class='webvsed-ctxmenu'>",
-                "    <li class='webvsed-tabctx-popout'><a href='#'><span class='ui-icon ui-icon-extlink'></span>Popout</a></li>",
+                "    <li class='webvsed-tabctx-pop'><a href='#'><span class='ui-icon ui-icon-arrowthick-1-ne'></span>Popout</a></li>",
                 "    <li class='webvsed-tabctx-close'><a href='#'><span class='ui-icon ui-icon-close'></span>Close</a></li>",
                 "</ul>"
             ].join(""));
-            tabCtxMenu.menu().hide().css("position", "absolute");
-            this.box.append(tabCtxMenu);
+            panelCtxMenu.menu().hide().css("position", "absolute");
+            this.box.append(panelCtxMenu);
             var addComponentMenu = this._buildAddComponentMenu();
             var treeCtxMenu = $([
                 "<ul class='webvsed-ctxmenu'>",
@@ -82,7 +82,7 @@
             addComponentMenu.menu().hide().css("position", "absolute");
             this.box.append(addComponentMenu);
             this.addComponentMenu = addComponentMenu;
-            this.tabCtxMenu = tabCtxMenu;
+            this.panelCtxMenu = panelCtxMenu;
             this.treeCtxMenu = treeCtxMenu;
 
 
@@ -140,17 +140,16 @@
             this.tabList.on("contextmenu", "li", function(event) {
                 var tab = $(this);
                 if(tab.index() !== 0) {
-                    webvsed.tabCtxMenuPanel = tab.data("webvsedNodeId");
-                    webvsed.tabCtxMenu.css({left: event.pageX, top: event.pageY}).show();
+                    webvsed._showPanelCtxMenu(tab.data("webvsedNodeId"), event.pageX, event.pageY)
                 }
                 event.preventDefault();
             });
-            this.tabCtxMenu.children(".webvsed-tabctx-close").on("click", function(event) {
-                webvsed._closePanel(webvsed.tabCtxMenuPanel);
+            this.panelCtxMenu.children(".webvsed-tabctx-close").on("click", function(event) {
+                webvsed._closePanel(webvsed.panelCtxMenuPanel);
                 event.preventDefault();
             });
-            this.tabCtxMenu.children(".webvsed-tabctx-popout").on("click", function(event) {
-                webvsed._popoutPanel(webvsed.tabCtxMenuPanel);
+            this.panelCtxMenu.children(".webvsed-tabctx-pop").on("click", function(event) {
+                webvsed._popPanel(webvsed.panelCtxMenuPanel);
                 event.preventDefault();
             });
 
@@ -183,9 +182,9 @@
             // Hide all context menus
             $("body").on("click", function(event) {
                 webvsed.addComponentMenu.hide();
-                webvsed.tabCtxMenu.hide();
+                webvsed.panelCtxMenu.hide();
                 webvsed.treeCtxMenu.hide();
-                this.tabCtxMenuPanel = null;
+                this.panelCtxMenuPanel = null;
                 this.treeCtxMenuNode = null;
             });
 
@@ -204,9 +203,9 @@
                 var panelId = webvsed._getCurrentPanelInfo().node.id;
                 webvsed._closePanel(panelId);
             });
-            this.toolbar.find(".webvsed-toolbar-popout").on("click", function() {
+            this.toolbar.find(".webvsed-toolbar-pop").on("click", function() {
                 var panelId = webvsed._getCurrentPanelInfo().node.id;
-                webvsed._popoutPanel(panelId);
+                webvsed._popPanel(panelId);
             });
 
             // toolbar insert menu
@@ -238,9 +237,14 @@
                 }
             });
 
+            // dialog event
             this.box.on("dialogbeforeclose", function(event, ui) {
                 var id = $(event.target).data("webvsedNodeId");
                 webvsed._closePanel(id);
+            });
+            this.box.on("contextmenu", ".ui-dialog .ui-dialog-titlebar", function(event) {
+                webvsed._showPanelCtxMenu($(this).next().data("webvsedNodeId"), event.pageX, event.pageY)
+                event.preventDefault();
             });
 
             // Panel focus events
@@ -266,6 +270,18 @@
 
         _slugify: function(str) {
             return $.trim(str).toLowerCase().replace(/\s+/, "_");
+        },
+
+        _showPanelCtxMenu: function(id, x, y) {
+            var panelInfo = this.panelInfo[id];
+            var popMenuEntry = this.panelCtxMenu.find(".webvsed-tabctx-pop a");
+            if(panelInfo.tab) {
+                popMenuEntry.html("<span class='ui-icon ui-icon-arrowthick-1-ne'></span>Pop Out");
+            } else {
+                popMenuEntry.html("<span class='ui-icon ui-icon-arrowthick-1-sw'></span>Pop In");
+            }
+            this.panelCtxMenuPanel = id;
+            this.panelCtxMenu.css({left: x, top: y}).show();
         },
 
         _buildAddComponentMenu: function() {
@@ -483,29 +499,36 @@
             // set toolbar button states
             this.toolbar.find("button").button("option", "disabled", false);
             if(panelInfo.node.id == this.rootNodeId) {
-                this.toolbar.find(".webvsed-toolbar-remove,.webvsed-toolbar-close,.webvsed-toolbar-popout").button("option", "disabled", true);
+                this.toolbar.find(".webvsed-toolbar-remove,.webvsed-toolbar-close,.webvsed-toolbar-pop").button("option", "disabled", true);
             }
-            if(!panelInfo.tab) {
-                this.toolbar.find(".webvsed-toolbar-popout").button("option", "disabled", true);
+            var popButtonOptions;
+            if(panelInfo.tab) {
+                popButtonOptions = {icons:{primary: "ui-icon-arrowthick-1-ne"}, label:"Pop Out"};
+            } else {
+                popButtonOptions = {icons:{primary: "ui-icon-arrowthick-1-sw"}, label:"Pop In"};
             }
+            this.toolbar.find(".webvsed-toolbar-pop").button("option", popButtonOptions);
         },
 
-        _popoutPanel: function(id) {
+        _popPanel: function(id) {
             var panelInfo = this.panelInfo[id];
-            if(!panelInfo.tab) {
-                return;
+            if(panelInfo.tab) {
+                panelInfo.tab.remove();
+                panelInfo.tab = null;
+                panelInfo.panel.dialog({
+                    title: panelInfo.node.name,
+                    appendTo: this.box,
+                    width: 500,
+                    height: 500
+                });
+            } else {
+                panelInfo.panel.dialog("destroy").appendTo(this.tabs);
+                var node = panelInfo.node;
+                var tab = $("<li data-webvsed-node-id='"+node.id+"'><a href='#webvsed-"+node.id+"'>"+node.name+"</a></li>");
+                this.tabList.append(tab);
+                panelInfo.tab = tab;
             }
-
-            panelInfo.tab.remove();
-            panelInfo.tab = null;
-            panelInfo.panel.dialog({
-                title: panelInfo.node.name,
-                appendTo: this.box,
-                width: 500,
-                height: 500
-            });
             this.tabs.tabs("refresh");
-
             this._activatePanel();
         },
 
