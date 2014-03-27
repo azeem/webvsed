@@ -106,6 +106,7 @@
             });
             this.tree.tree({
                 autoOpen: 2,
+                keyboardSupport: false,
                 dragAndDrop: true,
                 onCanMove: function(node) {
                     return node.component.id != "root";
@@ -353,27 +354,49 @@
 
         _updateComponent: function(form, field) {
             var node = this.tree.tree("getNodeById", form.parent().data("webvsedNodeId"));
+            var control, errorMessage;
             if(form.hasClass("webvsed-default-form")) {
-                var json = Alpaca(form.get()).getValue();
-                var pos = node.parent.children.indexOf(node);
-
+                control = Alpaca(form.get());
+                var json = control.getValue();
                 var parent = node.component.parent;
-                parent.detachComponent(node.component.id);
-                var newComponent = parent.addComponent(json, pos);
 
-                this.tree.tree("updateNode", node, {
-                    component: newComponent
-                });
+                var newComponent;
+                try {
+                    newComponent = parent.createComponent(json);
+                } catch(e) {
+                    errorMessage = e.message;
+                }
 
-                this._setComponentId(node, newComponent.id);
+                if(newComponent) {
+                    var pos = node.parent.children.indexOf(node);
+                    parent.detachComponent(node.component.id);
+                    parent.addComponent(newComponent, pos);
+                    this.tree.tree("updateNode", node, {
+                        component: newComponent
+                    });
+                    this._setComponentId(node, newComponent.id);
+                }
             } else {
                 var path = [];
                 field.parents(".alpaca-fieldset-item-container").each(function() {
                     path.push($(this).data("alpacaItemContainerItemKey"));
                 });
                 path.reverse();
-                var value = Alpaca(form.get()).getControlByPath(path.join("/")).getValue();
-                node.component.setOption(path.join("."), value);
+                control = Alpaca(form.get()).getControlByPath(path.join("/"));
+                var value = control.getValue();
+                try {
+                    node.component.setOption(path.join("."), value);
+                } catch(e) {
+                    errorMessage = e.message;
+                }
+            }
+
+            // set the error message on the control
+            var controlEl = $(control.getEl());
+            if(errorMessage) {
+                controlEl.append("<div class='webvsed-field-error ui-state-error'><span class='ui-icon ui-icon-alert'></span><span class='webvsed-field-error-text'>"+errorMessage+"</span></div>");
+            } else {
+                controlEl.children(".webvsed-field-error").remove();
             }
         },
 

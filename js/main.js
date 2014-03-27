@@ -165,8 +165,14 @@
 
 $(document).ready(function() {
     var analyser = new Webvs.WebAudioAnalyser();
+    $("#canvas").dialog({
+        title: "Output",
+        width: 330,
+        height: 360
+    });
+
     var webvsMain = new Webvs.Main({
-        canvas: $("#canvas").get(0),
+        canvas: $("#canvas canvas").get(0),
         analyser: analyser
     });
     webvsMain.start();
