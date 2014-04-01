@@ -1,6 +1,6 @@
 (function($) {
 
-    $.widget("webvs.webvseditor", {
+    $.widget("webvsed.webvsEditor", {
         options: {
             width: 700,
             height: 500
@@ -15,7 +15,7 @@
 
             // setup initial state
             this._fixDimensions();
-            this.panels.webvspanels("showPanel", this.tree.tree("getNodeById", this.rootNodeId));
+            this.panels.webvsedPanels("showPanel", this.tree.tree("getNodeById", this.rootNodeId));
         },
 
         /**
@@ -110,7 +110,7 @@
             });
 
             // Build Panels
-            this.panels.webvspanels();
+            this.panels.webvsedPanels();
         },
 
         /**
@@ -160,20 +160,20 @@
                 event.stopPropagation(); // prevent context menu hide from firing
             });
             this.toolbar.find(".webvsed-toolbar-remove").on("click", function(event) {
-                _this._removeComponent(_this.panels.webvspanels("getCurrentPanel").node);
+                _this._removeComponent(_this.panels.webvsedPanels("getCurrentPanel").node);
             });
             this.toolbar.find(".webvsed-toolbar-close").on("click", function() {
-                var panelId = _this.panels.webvspanels("getCurrentPanel").node.id;
-                _this.panels.webvspanels("closePanel", panelId);
+                var panelId = _this.panels.webvsedPanels("getCurrentPanel").node.id;
+                _this.panels.webvsedPanels("closePanel", panelId);
             });
             this.toolbar.find(".webvsed-toolbar-pop").on("click", function() {
-                var panelId = _this.panels.webvspanels("getCurrentPanel").node.id;
-                _this.panels.webvspanels("popPanel", panelId);
+                var panelId = _this.panels.webvsedPanels("getCurrentPanel").node.id;
+                _this.panels.webvsedPanels("popPanel", panelId);
             });
 
             // toolbar insert menu
             this.addComponentMenu.on("click", ".webvsed-component-add", function() {
-                var node = _this.panels.webvspanels("getCurrentPanel").node;
+                var node = _this.panels.webvsedPanels("getCurrentPanel").node;
                 _this._addNewComponent($(this).data("componentName"), node);
             });
 
@@ -184,7 +184,7 @@
 
             // show tab when tree item is selected
             this.tree.on("tree.select", function(event) {
-                _this.panels.webvspanels("showPanel", event.node);
+                _this.panels.webvsedPanels("showPanel", event.node);
             });
 
             this.tree.on("tree.move", function(event) {
@@ -339,7 +339,7 @@
                 label: component.id,
                 component: component
             }, node);
-            this.panels.webvspanels("showPanel", this.tree.tree("getNodeById", id));
+            this.panels.webvsedPanels("showPanel", this.tree.tree("getNodeById", id));
         },
 
         _removeComponent: function(node) {
@@ -349,7 +349,7 @@
             var component = node.component.parent.detachComponent(node.component.id);
             component.destroy();
             this.tree.tree("removeNode", node);
-            this.panels.webvspanels("closePanel", node.id);
+            this.panels.webvsedPanels("closePanel", node.id);
         },
 
         _toggleComponentEnable: function(node) {
@@ -383,7 +383,7 @@
             this.tree.tree("updateNode", node, newId);
 
             // update tab/dialog title if open
-            this.panels.webvspanels("updateTitle", node.id);
+            this.panels.webvsedPanels("updateTitle", node.id);
         },
 
         _moveComponent: function(moveInfo) {

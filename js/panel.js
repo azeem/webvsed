@@ -1,5 +1,5 @@
 (function($) {
-    $.widget("webvs.webvspanels", {
+    $.widget("webvsed.webvsedPanels", {
         _create: function() {
             this.panelInfo = {};
             this.panelOrder = [];
