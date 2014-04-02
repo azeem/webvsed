@@ -111,3 +111,46 @@ body {
 .webvsed-field-error .ui-icon {
     line-height: 1.5em;
 }
+
+/** Webvs Fields Styles **/
+.webvsed-arrayfield:hover .webvsed-arrayfield-controls {
+    display: block;
+}
+
+.webvsed-arrayfield-controls {
+    background-color: #EEEEEE;
+    border: 1px solid #AAAAAA;
+    padding: 3px;
+    margin: 0px 0px 4px 0px;
+    display: none;
+}
+
+.webvsed-arrayfield-itemcontrols {
+    display: none;
+    float: right;
+    padding: 3px;
+    margin: 0px 0px 4px 0px;
+}
+
+.webvsed-arrayfield-item {
+    margin: 5px;
+    padding: 7px;
+}
+
+.webvsed-arrayfield-item:hover {
+    background-color: #FCFBF3;
+}
+
+.webvsed-arrayfield-item:hover .webvsed-arrayfield-itemcontrols {
+    display: block;
+}
+
+.webvsed-arrayfield-movehandle {
+    display: inline-block;
+    background-color: transparent;
+    cursor: move;
+    width: 16px;
+    height: 16px;
+    margin: 0px;
+    vertical-align: middle;
+}

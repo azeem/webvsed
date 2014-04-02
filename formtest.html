@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebVS Editor</title>
+    <link rel="stylesheet" type="text/css" href="bower_components/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/jqtree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/alpaca/build/package/css/alpaca.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+  <div id="my-form">
+    <h4>Hello World</h4>
+    <label>
+      Here is an integer
+      <input type="text" data-wef="IntegerField" data-wef-options='{"validators":[{"type":"range","min":150,"max":354}], "required": true, "default": 123}'/>
+    </label>
+
+    <div>
+      Select any one value
+      <fieldset data-wef="EnumField" data-wef-options="my-select"></fieldset>
+    </div>
+
+    <label>
+      this is a boolean value
+      <input type="checkbox" data-wef="BooleanField"/>
+    </label>
+
+    <div data-wef="ArrayField" data-wef-options="my-array">
+      <div>
+        some value here
+        <input type="text" data-wef="TextField" data-wef-options='{"default":"hello","required":true}'/>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="bower_components/jqtree/tree.jquery.js"></script>
+  <script type="text/javascript" src="bower_components/webvs/build/libs.js"></script>
+  <script type="text/javascript" src="bower_components/webvs/build/webvs.js"></script>
+  <script type="text/javascript" src="bower_components/alpaca/build/package/js/alpaca.js"></script>
+
+  <script type="text/javascript" src="js/base.js"></script>
+  <script type="text/javascript" src="js/form.js"></script>
+  <script type="text/javascript" src="js/panel.js"></script>
+  <script type="text/javascript" src="js/editor.js"></script>
+
+  <script type="text/javascript">
+    WebvsEd.makeForm($("#my-form"), {
+        "my-array": {
+            default: ["foo", "bar"]
+        },
+        "my-select": {
+            default: "muhaha",
+            enum: ["hello_world", "blah", "muhaha"],
+            labels: {"hello_world": "Hello World", "blah": "Blah", "muhaha": "Muhaha"}
+        }
+    });
+
+    $("#my-form").on("valueChange", function(event, field, value) {
+        console.log(value);
+    });
+  </script>
+</body>
+</html>
