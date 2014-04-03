@@ -13,6 +13,7 @@
     "jquery": "~2.1.0",
     "jqtree": "~0.20.0",
     "jquery-ui": "~1.10.4",
-    "alpaca": "https://github.com/gitana/alpaca.git#~1.1.1"
+    "alpaca": "https://github.com/gitana/alpaca.git#~1.1.1",
+    "backbone": "~1.1.2"
   }
 }
