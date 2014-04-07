@@ -1,19 +1,67 @@
 module.exports = function(grunt) {
+    var jsFiles = [
+        "src/js/Base.js",
+        "src/js/fields/Field.js",
+        "src/js/fields/TextField.js",
+        "src/js/fields/IntegerField.js",
+        "src/js/fields/BooleanField.js",
+        "src/js/fields/EnumField.js",
+        "src/js/fields/ContainerField.js",
+        "src/js/fields/ArrayField.js",
+        "src/js/fields/ObjectField.js"
+    ];
+
+    var lessFiles = [
+        "src/less/**/*.less"
+    ];
+
     grunt.initConfig({
         jshint: {
-            files: ['Gruntfile.js', "js/**/*.js"]
+            files: ['Gruntfile.js', "js/**/*.js"],
+            options: {
+                globals: {
+                    WebvsEd: true
+                },
+                evil: true
+            }
         },
 
         uglify: {
+            dev: {
+                options: {
+                    sourceMap: true,
+                    sourceMapName: "build/jsSourceMap.map"
+                },
+                files: {
+                    "build/webvsed.js": jsFiles,
+                }
+            },
             dist: {
                 files: {
-                "dist/js/main.min.js": "js/**/*.js",
+                    "build/webvsed.min.js": jsFiles,
+                }
+            }
+        },
+
+        less: {
+           dev: {
+                options: {
+                    sourceMap: true,
+                    sourceMapName: "build/lessSourceMap.map"
+                },
+                files: {
+                    "build/webvsed.css": lessFiles
+                }
+            },
+            dist: {
+                files: {
+                    "build/webvsed.min.css": lessFiles
                 }
             }
         },
 
         clean: {
-            dist: ['dist/*']
+            build: ['build/*'],
         },
 
         connect: {
@@ -29,8 +77,8 @@ module.exports = function(grunt) {
 
         watch: {
             app: {
-                files: ["js/**/*.js", "css/**/*.css", "index.html"],
-                tasks: ["jshint"],
+                files: ["src/**/*", "examples/**/*"],
+                tasks: ["default"],
                 options: {
                     livereload: true
                 }
@@ -44,8 +92,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks("grunt-contrib-connect");
+    grunt.loadNpmTasks("grunt-contrib-less");
 
     // Default task.
-    grunt.registerTask('default', ['clean:dist', 'jshint', 'uglify:dist']);
+    grunt.registerTask('default', ['jshint', 'clean', 'uglify:dev', 'less:dev']);
+    grunt.registerTask('dist', ['jshint', 'clean', 'uglify:dist', 'less:dist']);
     grunt.registerTask("debug", ["connect", "watch"]);
 };

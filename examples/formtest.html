@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebVS Editor</title>
+    <link rel="stylesheet" type="text/css" href="../bower_components/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/jqtree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="../build/webvsed.css">
+</head>
+<body>
+
+  <div id="container" style="width: 500px"></div>
+
+  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-ui/ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="../bower_components/jqtree/tree.jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-closest-descendant/dist/closestDescendant.js"></script>
+  <script type="text/javascript" src="../bower_components/underscore/underscore.js"></script>
+  <script type="text/javascript" src="../bower_components/backbone/backbone.js"></script>
+
+  <script type="text/javascript" src="../build/webvsed.js"></script>
+
+  <script type="text/javascript">
+    var field = WebvsEd.makeField({
+        type: "ObjectField",
+        title: "My Glorious Object",
+        collapsible: true,
+        collapsed: true,
+        fields: [
+            {
+                key: "frameCount",
+                type: "IntegerField",
+                label: "integer item",
+                required: true
+            },
+            {
+                key: "compatMode",
+                type: "BooleanField",
+                label: "Check me",
+                default: true
+            },
+            {
+                key: "values",
+                type: "ArrayField",
+                title: "Values",
+                arrayItem: {
+                    type: "EnumField",
+                    title: "value",
+                    enum: ["foo", "bar"],
+                    enumLabels: ["Foo", "Bar"]
+                }
+            }
+        ]
+    });
+    $("#container").append(field.el);
+
+    $("#container").on("valueChange", function(event, field, value) {
+        console.log(value);
+    });
+  </script>
+
+</body>
+</html>
