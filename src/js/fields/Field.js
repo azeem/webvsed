@@ -29,12 +29,14 @@
      * @returns {WebvsEd.Field} - instantiated field
      * @memberof WebvsEd
      */
-    WebvsEd.makeField = function(opts) {
+    WebvsEd.makeField = function(opts, parent) {
         var fieldClass = WebvsEd[opts.type];
         if(!fieldClass) {
             throw new Error("Unknown field class " + fieldClass);
         }
-        return (new fieldClass(opts));
+        var field = new fieldClass(opts);
+        field.setParent(parent);
+        return field;
     };
 
 
@@ -69,7 +71,13 @@
             }
 
             this.title = opts.title;
-            this.required = opts.required?true:false;
+
+            if(_.isUndefined(opts.required)) {
+                this.required = true;
+            } else {
+                this.required = opts.required?true:false;
+            }
+
             this.validators = opts.validators || [];
             if(!_.isArray(this.validators)) {
                 this.validators = [this.validators];
@@ -199,6 +207,18 @@
 
         $closest: function(selector) {
             return this.$el.closestDescendant(selector);
+        },
+
+        setParent: function(parent) {
+            this.parent = parent;
+        },
+
+        getPath: function() {
+            var parentPath;
+            if(this.parent) {
+                path = this.parent.getPath();
+            }
+            return (parentPath + "." + this.key);
         },
 
         className: function() {

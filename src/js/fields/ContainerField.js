@@ -14,7 +14,7 @@
         ].join("")),
 
         events: _.extend({
-            "click .title": "toggleCollapse"
+            "click > .title": "toggleCollapse"
         }, WebvsEd.Field.prototype.events),
 
         initialize: function(opts) {
@@ -22,7 +22,9 @@
                 this.collapsible = true;
                 this.startCollapsed = opts.collapsed?true:false;
             }
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
+            // default required should be false for container fields
+            var newOpts = _.extend({required: false}, opts);
+            WebvsEd.Field.prototype.initialize.call(this, newOpts);
         },
 
         render: function() {

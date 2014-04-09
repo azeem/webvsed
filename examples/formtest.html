@@ -24,13 +24,12 @@
         type: "ObjectField",
         title: "My Glorious Object",
         collapsible: true,
-        collapsed: true,
         fields: [
             {
                 key: "frameCount",
                 type: "IntegerField",
                 label: "integer item",
-                required: true
+                default: 123,
             },
             {
                 key: "compatMode",
@@ -44,6 +43,7 @@
                 title: "Values",
                 arrayItem: {
                     type: "EnumField",
+                    radio: true,
                     title: "value",
                     enum: ["foo", "bar"],
                     enumLabels: ["Foo", "Bar"]

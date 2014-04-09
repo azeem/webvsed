@@ -23,7 +23,7 @@
             this.fieldBody.append(this.objectTemplate());
 
             for(var i = 0;i < this.fieldOpts.length;i++) {
-                var field = WebvsEd.makeField(this.fieldOpts[i]);
+                var field = WebvsEd.makeField(this.fieldOpts[i], this);
                 this.fields[field.key] = field;
                 this.$closest(".objectItems").append(field.el);
             }

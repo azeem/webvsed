@@ -44,7 +44,7 @@
         },
 
         addItem: function(value) {
-            var field = WebvsEd.makeField(this.arrayItemOpts);
+            var field = WebvsEd.makeField(this.arrayItemOpts, this);
             var item = $(this.itemTemplate());
             this.$closest(".arrayItems").append(item);
             item.find(".itemBody").append(field.el);
