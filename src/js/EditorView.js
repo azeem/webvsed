@@ -1,7 +1,7 @@
 (function($, _, Backbone) {
 
     WebvsEd.EditorView = Backbone.View.extend({
-        classname: WebvsEd.getClass("editor", "box"),
+        className: WebvsEd.getClass("editor", "box"),
 
         template: _.template([
             "<div class='row1'>",
@@ -15,8 +15,6 @@
             "    </div>",
             "</div>",
             "<div class='row2'>",
-            "    <div class='panels'>",
-            "    </div>",
             "    <div class='sidebar'>",
             "        <div class='tree'></div>",
             "    </div>",
@@ -36,26 +34,27 @@
         addMenuTemplate: _.template([
             "<ul class='ctxtmenu addmenu'>",
             "    <% _.each(menu.items, function(className) { %>",
-            "        <li data-webvsed-component-name='<%= className %>' class='component-add'>",
-            "            <a href='#'><span class='ui-icon ui-icon-gear'></span><%= className %></a>",
+            "        <li class='component-add'>",
+            "            <a data-webvsed-component-name='<%= className %>' href='#'><span class='ui-icon ui-icon-gear'></span><%= className %></a>",
             "        </li>",
             "    <% }) %>",
-            "    <% _.each(menu.subMenus, function(menuName, subMenu) { %>",
+            "    <% _.each(menu.subMenus, function(subMenu, menuName) { %>",
             "        <li>",
             "            <a href='#'><span class='ui-icon ui-icon-suitcase'></span><%= menuName %></a>",
             "            <%= self(subMenu) %>",
             "        </li>",
             "    <% }) %>",
             "</ul>",
-        ].join(""));
+        ].join("")),
 
         events: {
-            "tree.contextmenu > .row2 > .sidebar tree": "handleTreeCtxtMenu",
-            "tree.select > .row2 > .sidebar tree": "handleTreeSelect",
-            "tree.move > .row2 > .sidebar tree": "handleTreeMove",
+            "tree.contextmenu > .row2 > .sidebar .tree": "handleTreeCtxtMenu",
+            "tree.select > .row2 > .sidebar .tree": "handleTreeSelect",
+            "tree.move > .row2 > .sidebar .tree": "handleTreeMove",
 
             "click > .treectxtmenu .component-add": "handleMenuAdd",
             "click > .treectxtmenu .remove": "handleMenuRemove",
+            "click > .treectxtmenu .disable": "handleMenuEnableDisable",
             "click > .treectxtmenu .enable": "handleMenuEnableDisable",
             "click > .treectxtmenu .set-id": "handleMenuSetId",
 
@@ -68,17 +67,14 @@
 
             "resize > .row2 > .sidebar": "fixDimensions",
 
-            "panelActivate > .row2 > .panels": "handlePanelActivate"
+            "panelActivate > .row2": "handlePanelActivate"
         },
 
         initialize: function(opts) {
             this.width = opts.width || 700;
-            this.height = opts.height || 700;
+            this.height = opts.height || 500;
             this.webvsMain = opts.webvsMain;
-
             this.idCounter = 0;
-
-            this.render();
         },
 
         render: function() {
@@ -90,13 +86,18 @@
             // create the menus
             var addMenuHtml = this.buildAddComponentMenu();
             var treeCtxtMenu = $(this.treeCtxtMenuTemplate({addMenu: addMenuHtml}));
-            treeCtxtMenu.menu().hide().css("posiiton", "absolute");
+            treeCtxtMenu.menu().hide().css("position", "absolute");
             this.$el.append(treeCtxtMenu);
             this.treeCtxtMenu = treeCtxtMenu;
             var addComponentMenu = $(addMenuHtml);
-            addComponentMenu.menu().hide().css("posiiton", "absolute");
+            addComponentMenu.menu().hide().css("position", "absolute");
             this.$el.append(addComponentMenu);
             this.addComponentMenu = addComponentMenu;
+            $("body").on("click", _.bind(function() {
+                this.treeCtxtMenu.hide();
+                this.addComponentMenu.hide();
+                this.treeCtxtMenuNode = null;
+            }, this));
 
             // Build Toolbar buttons
             this.toolbar.find("button").each(function() {
@@ -126,7 +127,13 @@
             });
 
             // build panels
-            this.panels = new WebvsEd.PanelsView({element: this.$el.find(".row2 .panels")});
+            this.panels = new WebvsEd.PanelsView();
+            this.$(".row2").prepend(this.panels.el);
+            this.panels.render();
+
+            // initial setup
+            this.fixDimensions();
+            this.panels.showPanel(this.tree.tree("getNodeById", this.rootNodeId));
         },
 
         buildTree: function(component) {
@@ -157,16 +164,16 @@
                 if(_.isString(key)) {
                     key = key.split("/");
                 }
-                if(key.length == 0) {
+                if(!key || key.length === 0) {
                     return object;
                 }
                 if(!(key[0] in object.subMenus)) {
-                    object[key[0]] = {
+                    object.subMenus[key[0]] = {
                         items: [],
                         subMenus: {}
                     };
                 }
-                return findOrCreate(object[key[0]], _.rest(key));
+                return findOrCreate(object.subMenus[key[0]], _.rest(key));
             };
 
             var menu = {
@@ -179,25 +186,24 @@
                 menuLoc.items.push(name);
             }
 
-            var this_ = this;
-            var recurTemplate = function(menu) {
-                return this_.addMenuTemplate({
+            var recurTemplate = _.bind(function(menu) {
+                return this.addMenuTemplate({
                     menu: menu,
                     self: recurTemplate
                 });
-            };
+            }, this);
 
             return recurTemplate(menu);
         },
 
         fixDimensions: function() {
             this.$el.css({
-                width: this.options.width,
-                height: this.options.height
+                width: this.width,
+                height: this.height
             });
             var row2 = this.$(".row2");
             var row1 = this.$(".row1");
-            var panels = this.$(".panels");
+            var panels = this.panels.$el;
             row2.css("height", this.$el.height()-row1.outerHeight());
             panels.css("width", row2.width()-this.sidebar.outerWidth());
         },
@@ -237,9 +243,9 @@
         toggleComponentEnable: function(node) {
             node.component.enabled = !node.component.enabled;
             if(node.component.enabled) {
-                $(node.element).removeClass("webvsed-tree-node-disabled");
+                $(node.element).removeClass("node-disabled");
             } else {
-                $(node.element).addClass("webvsed-tree-node-disabled");
+                $(node.element).addClass("node-disabled");
             }
         },
 
@@ -321,8 +327,9 @@
             }
         },
 
-        handleMenuAdd: function() {
-            this.addNewComponent($(event.target).data("componentName"), this.treeCtxtMenuNode);
+        handleMenuAdd: function(event) {
+            this.addNewComponent($(event.target).data("webvsedComponentName"), this.treeCtxtMenuNode);
+            event.preventDefault();
         },
 
         handleMenuRemove: function() {
@@ -356,12 +363,13 @@
 
         handleToolbarPop: function() {
             var panelId = this.panels.getCurrentPanel().node.id;
-            this.panels.popPanel(panelId);
+            this.panels.togglePopPanel(panelId);
         },
 
-        handleToolbarAdd: function() {
+        handleToolbarAdd: function(event) {
             var node = this.panels.getCurrentPanel().node;
-            this.addNewComponent($(event.target).data("componentName"), node);
+            this.addNewComponent($(event.target).data("webvsedComponentName"), node);
+            event.preventDefault();
         },
 
         handlePanelActivate: function(event, panel) {

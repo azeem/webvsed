@@ -8,7 +8,10 @@ module.exports = function(grunt) {
         "src/js/fields/EnumField.js",
         "src/js/fields/ContainerField.js",
         "src/js/fields/ArrayField.js",
-        "src/js/fields/ObjectField.js"
+        "src/js/fields/ObjectField.js",
+        "src/js/FormDefs.js",
+        "src/js/PanelsView.js",
+        "src/js/EditorView.js"
     ];
 
     var lessFiles = [
@@ -17,7 +20,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         jshint: {
-            files: ['Gruntfile.js', "js/**/*.js"],
+            files: ['Gruntfile.js', "src/js/**/*.js"],
             options: {
                 globals: {
                     WebvsEd: true
@@ -26,16 +29,15 @@ module.exports = function(grunt) {
             }
         },
 
-        uglify: {
+        concat: {
             dev: {
-                options: {
-                    sourceMap: true,
-                    sourceMapName: "build/jsSourceMap.map"
-                },
                 files: {
                     "build/webvsed.js": jsFiles,
                 }
-            },
+            }
+        },
+
+        uglify: {
             dist: {
                 files: {
                     "build/webvsed.min.js": jsFiles,
@@ -93,9 +95,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks("grunt-contrib-connect");
     grunt.loadNpmTasks("grunt-contrib-less");
+    grunt.loadNpmTasks("grunt-contrib-concat");
 
     // Default task.
-    grunt.registerTask('default', ['jshint', 'clean', 'uglify:dev', 'less:dev']);
+    grunt.registerTask('default', ['jshint', 'clean', 'concat:dev', 'less:dev']);
     grunt.registerTask('dist', ['jshint', 'clean', 'uglify:dist', 'less:dist']);
-    grunt.registerTask("debug", ["connect", "watch"]);
+    grunt.registerTask("debug", ["default", "connect", "watch"]);
 };

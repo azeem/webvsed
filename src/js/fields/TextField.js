@@ -30,7 +30,7 @@
         },
 
         isEmpty: function(value) {
-            return (WebvsEd.Field.prototype.isEmpty(value) || value == "");
+            return (WebvsEd.Field.prototype.isEmpty(value) || value === "");
         },
 
         renderValue: function() {

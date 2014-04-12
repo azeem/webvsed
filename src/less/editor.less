@@ -1,0 +1,55 @@
+.webvsed-editor {
+    border: 1px solid black;
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 0px 5px 5px 5px;
+
+    > .row1 {
+        padding: 5px 0px;
+        .toolbar {
+            padding: 2px;
+            .buttonset {
+                display: inline;
+            }
+        }
+    }
+
+    > .row2 {
+        width: 100%;
+
+        > .sidebar {
+            width: 200px;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            .tree ul {
+                margin: 0px;
+                padding: 5px 10px 5px 20px;
+                .jqtree-element {
+                    padding: 3px;
+                }
+                .node-disabled .jqtree-title {
+                    color: red;
+                }
+            }
+        }
+
+        > .webvsed-panels {
+            height: 100%;
+            float: right;
+
+            .ui-tabs-nav li.panelstate-active {
+                background: #B5DFFC none;
+            }
+
+            .ui-dialog.panelstate-active .ui-dialog-titlebar {
+                background: #B5DFFC none;
+            }
+        }
+    }
+
+    .ctxtmenu {
+        z-index: 1000;
+    }
+}

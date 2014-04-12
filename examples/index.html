@@ -2,10 +2,9 @@
 <html>
 <head>
     <title>WebVS Editor</title>
-    <link rel="stylesheet" type="text/css" href="bower_components/jquery-ui/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="bower_components/jqtree/jqtree.css">
-    <link rel="stylesheet" type="text/css" href="bower_components/alpaca/build/package/css/alpaca.css">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/jqtree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="../build/webvsed.css">
 </head>
 <body>
   <div id="editor">
@@ -15,16 +14,35 @@
     <canvas width="300" height="300"></canvas>
   </div>
 
-  <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
-  <script type="text/javascript" src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
-  <script type="text/javascript" src="bower_components/jqtree/tree.jquery.js"></script>
-  <script type="text/javascript" src="bower_components/webvs/build/libs.js"></script>
-  <script type="text/javascript" src="bower_components/webvs/build/webvs.js"></script>
-  <script type="text/javascript" src="bower_components/alpaca/build/package/js/alpaca.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-ui/ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="../bower_components/jqtree/tree.jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-closest-descendant/dist/closestDescendant.js"></script>
+  <script type="text/javascript" src="../bower_components/underscore/underscore.js"></script>
+  <script type="text/javascript" src="../bower_components/backbone/backbone.js"></script>
+  <script type="text/javascript" src="../bower_components/webvs/build/webvs.js"></script>
 
-  <script type="text/javascript" src="js/formdefs.js"></script>
-  <script type="text/javascript" src="js/panel.js"></script>
-  <script type="text/javascript" src="js/editor.js"></script>
-  <script type="text/javascript" src="js/main.js"></script>
+  <script type="text/javascript" src="../build/webvsed.js"></script>
+
+  <script type="text/javascript">
+    var analyser = new Webvs.WebAudioAnalyser();
+    $("#canvas").dialog({
+        title: "Output",
+        width: 330,
+        height: 360
+    });
+
+    var webvsMain = new Webvs.Main({
+        canvas: $("#canvas canvas").get(0),
+        analyser: analyser
+    });
+    webvsMain.start();
+
+    var editor = new WebvsEd.EditorView({
+        webvsMain: webvsMain
+    });
+    $("body").append(editor.el);
+    editor.render();
+  </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
             "<div class='tabs'>",
             "    <ul></ul>",
             "</div>",
-            "<ul class='ctxtMenu'>",
+            "<ul class='ctxtmenu panelctxtmenu'>",
             "    <li class='pop'><a href='#'><span class='ui-icon ui-icon-arrowthick-1-ne'></span>Popout</a></li>",
             "    <li class='close'><a href='#'><span class='ui-icon ui-icon-close'></span>Close</a></li>",
             "</ul>"
@@ -31,8 +31,8 @@
 
         events: {
             "contextmenu > .tabs ul li": "handleTabCtxtMenu",
-            "click > .ctxtMenu .close":  "handleMenuClose",
-            "click > .ctxtMenu .pop":    "handleMenuPop",
+            "click > .panelctxtmenu .close":  "handleMenuClose",
+            "click > .panelctxtmenu .pop":    "handleMenuPop",
             "tabsactivate > .tabs":      "handlePanelActivate",
             "dialogbeforeclose":         "handleDialogClose",
             "contextmenu > .ui-dialog .ui-dialog-titlebar": "handleDialogCtxtMenu",
@@ -44,7 +44,6 @@
         initialize: function() {
             this.panelInfo = {};
             this.panelOrder = [];
-            this.render();
         },
 
         render: function() {
@@ -55,16 +54,20 @@
                 heightStyle: "fill"
             });
 
-            this.tabList = tabs.children().first();
+            this.tabList = this.tabs.find("ul");
 
-            this.ctxtMenu = this.$el.children(".ctxtMenu");
+            this.ctxtMenu = this.$el.children(".ctxtmenu");
             this.ctxtMenu.menu().hide().css("position", "absolute");
+            $("body").on("click", _.bind(function() {
+                this.ctxtMenu.hide();
+                this.ctxtMenuPanel = null;
+            }, this));
         },
 
         showCtxtMenu: function(id, x, y) {
             var panelInfo = this.panelInfo[id];
             var popMenuEntry = this.ctxtMenu.find(".pop a");
-            popMenuEntry.html(this.popMenuTextTemplate({tab: panelInfo.tab?true:false});
+            popMenuEntry.html(this.popMenuTextTemplate({tab: panelInfo.tab?true:false}));
             this.ctxtMenuPanel = id;
             this.ctxtMenu.css({left: x, top: y}).show();
         },
@@ -87,9 +90,9 @@
             this.activatePanel();
         },
 
-        activatePanel: function() {
+        activatePanel: function(id) {
             var panelInfo;
-            if(id) {
+            if(!_.isUndefined(id)) {
                 // move the given id to the end of the order
                 this.panelOrder.splice(this.panelOrder.indexOf(id), 1);
                 this.panelOrder.push(id);
@@ -99,16 +102,15 @@
             }
 
             // reset panelstate
-            var panelstateClassName = WebvsEd.getClass("panelstate-active");
-            this.tabList.children().removeClass(panelstateClassName);
-            this.$(".ui-dialog").removeClass(panelstateClassName);
+            this.tabList.children().removeClass("panelstate-active");
+            this.$(".ui-dialog").removeClass("panelstate-active");
 
             // set the panelstate class
             if(panelInfo.tab) {
-                panelInfo.tab.addClass(panelstateClassName);
+                panelInfo.tab.addClass("panelstate-active");
                 this.tabs.tabs("option", "active", panelInfo.tab.index());
             } else {
-                panelInfo.panel.parent(".ui-dialog").addClass(panelstateClassName);
+                panelInfo.panel.parent(".ui-dialog").addClass("panelstate-active");
                 panelInfo.panel.dialog("moveToTop");
             }
 
@@ -122,7 +124,7 @@
                 panelInfo.tab = null;
                 panelInfo.panel.dialog({
                     title: panelInfo.node.name,
-                    appendTo: this.element,
+                    appendTo: this.el,
                     width: 500,
                     height: 500
                 });
@@ -144,9 +146,9 @@
         showPanel: function(node) {
             var panelInfo = this.panelInfo[node.id];
             if(!panelInfo) {
-                var tab = this.tabTemplate({node: node});
+                var tab = $(this.tabTemplate({node: node}));
                 this.tabList.append(tab);
-                var panel = this.panelTemplate({node: node});
+                var panel = $(this.panelTemplate({node: node}));
                 this.tabs.append(panel);
 
                 var componentClass = node.component.constructor.Meta.name;
@@ -171,7 +173,7 @@
             }
         },
 
-        updateTitle: function() {
+        updateTitle: function(id) {
             var panelInfo = this.panelInfo[id];
             var title = panelInfo.node.component.id;
             if(panelInfo) {
@@ -186,7 +188,7 @@
         // event handlers
 
         handleTabCtxtMenu: function(event) {
-            var tab = $(event.target);
+            var tab = $(event.currentTarget);
             if(tab.index() !== 0) {
                 this.showCtxtMenu(tab.data("webvsedNodeId"), event.pageX, event.pageY);
             }
@@ -209,26 +211,25 @@
         },
 
         handleDialogCtxtMenu: function(event) {
-            var id = $(event.target).next().data("webvsedNodeId");
+            var id = $(event.currentTarget).next().data("webvsedNodeId");
             this.showCtxtMenu(id, event.pageX, event.pageY);
             event.preventDefault();
         },
 
-        handlePanelActivate: function(event) {
-            if(event.originalEvent) { // don't run for tabs refresh
-                var target = $(event.target);
-                var id = target.data("webvsedNodeId");
-
-                if(!id) { // this event is from a dialog
-                    var panel = target.find(".panel");
-                    if(panel.length === 0) {
-                        return;
-                    }
-                    id = panel.data("webvsedNodeId");
+        handlePanelActivate: function(event, ui) {
+            var id;
+            var target = $(event.currentTarget);
+            if(target.is(".tabs")) {
+                if(!event.originalEvent) {
+                    return; // don't run for tabs refresh
                 }
-
-                this.activatePanel(id);
+                id = ui.newTab.data("webvsedNodeId");
+            } else if(target.is(".panel") || target.is(".tabs ul .ui-state-active")) {
+                id = target.data("webvsedNodeId");
+            } else if(target.is(".ui-dialog")) {
+                id = target.find(".panel").data("webvsedNodeId");
             }
+            this.activatePanel(id);
         }
     });
 
