@@ -48,6 +48,13 @@
                     enum: ["foo", "bar"],
                     enumLabels: ["Foo", "Bar"]
                 }
+            },
+            {
+                key: "text",
+                keyupChange: true,
+                debounceWait: 1000,
+                type: "JSONField",
+                default: "Hello World"
             }
         ]
     });

@@ -3,8 +3,8 @@
     WebvsEd.FormDefs = FormDefs;
 
     FormDefs.Default = {
-        type: "TextField",
-        title: "Default"
+        type: "JSONField",
+        title: "Component Options"
     };
 
 })(jQuery, _, Backbone);
