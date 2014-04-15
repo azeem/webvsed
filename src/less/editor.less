@@ -39,10 +39,74 @@
             height: 100%;
             float: right;
 
-            .ui-tabs-nav li.panelstate-active {
-                background: #B5DFFC none;
+            .tabs {
+                border: none;
             }
 
+            .panel {
+                padding: 0px;
+                border: 1px solid #AAAAAA;
+                border-radius: 3px;
+
+                .header {
+                    background-color: #DEDEDE;
+                    border-bottom: 1px solid #AAAAAA;
+                    padding: 7px;
+
+                    input[name=id] {
+                        font-size: 0.85em;
+                    }
+
+                    .message {
+                        padding: 4px;
+                        margin: 4px;
+                        font-size: 0.85em;
+                    }
+                }
+
+                .header.error {
+                    background-color: #FFE5E5;
+                }
+
+                .body {
+                    padding: 10px;
+                }
+            }
+
+            .ui-tabs-nav {
+                background: transparent;
+                border: none;
+                padding-top: 0px;
+
+                li > a {
+                    padding: 5px 10px;
+                    font-size: 0.85em;
+                }
+                li.panelstate-active {
+                    background: #B5DFFC none;
+                }
+            }
+
+            .ui-dialog {
+                border: none;
+                padding: 0px;
+
+                .ui-dialog-titlebar {
+                    border-radius: 3px 3px 0px 0px;
+                    border-width: 1px 1px 0px 1px;
+                }
+
+                .panel {
+                    border-radius: 0px 0px 3px 3px;
+                    border-width: 0px 1px 1px 1px;
+                }
+
+                .ui-dialog-title {
+                    font-size: 0.85em;
+                    font-weight: normal;
+                    text-align: center;
+                }
+            }
             .ui-dialog.panelstate-active .ui-dialog-titlebar {
                 background: #B5DFFC none;
             }

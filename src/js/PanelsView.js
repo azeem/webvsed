@@ -17,9 +17,18 @@
             "<li data-webvsed-node-id='<%= node.id %>'><a href='#webvsed-<%= node.id %>'><%= node.name %></a></li>"
         ),
 
-        panelTemplate: _.template(
-            "<div data-webvsed-node-id='<%= node.id %>' class='panel' id='webvsed-<%= node.id %>'></div>"
-        ),
+        panelTemplate: _.template([
+            "<div data-webvsed-node-id='<%= node.id %>' class='panel' id='webvsed-<%= node.id %>'>",
+            "    <% if(node.component.id !== 'root') { %>",
+            "        <div class='header'>",
+            "            <input name='enabled' <%= (node.component.enabled)?'checked=\\'checked\\'':'' %> type='checkbox'/>",
+            "            <input name='id' type='text' value='<%= node.component.id %>'/>",
+            "        </div>",
+            "    <% } %>",
+            "    <div class='body'>",
+            "    </div>",
+            "</div>"
+        ].join("")),
 
         popMenuTextTemplate: _.template([
             "<% if(tab) { %>",
@@ -28,6 +37,8 @@
             "    <span class='ui-icon ui-icon-arrowthick-1-sw'></span>Pop In",
             "<% } %>"
         ].join("")),
+
+        headerErrorTemplate: _.template("<div class='message ui-state-error ui-corner-all'><%= message %></div>"),
 
         events: {
             "contextmenu > .tabs ul li": "handleTabCtxtMenu",
@@ -38,7 +49,10 @@
             "contextmenu > .ui-dialog .ui-dialog-titlebar": "handleDialogCtxtMenu",
             "click > .tabs ul .ui-state-active": "handlePanelActivate",
             "mousedown > .tabs .panel":          "handlePanelActivate",
-            "mousedown > .ui-dialog":            "handlePanelActivate"
+            "mousedown > .ui-dialog":            "handlePanelActivate",
+
+            "change > .tabs > .panel .header input":     "handlePanelHeaderChange",
+            "change > .ui-dialog > .panel .header input":     "handlePanelHeaderChange"
         },
 
         initialize: function() {
@@ -154,7 +168,7 @@
                 var componentClass = node.component.constructor.Meta.name;
                 var formDef = WebvsEd.FormDefs[componentClass] || WebvsEd.FormDefs.Default;
                 var form = WebvsEd.makeField(formDef);
-                panel.append(form.el);
+                panel.find(".body").append(form.el);
 
                 this.panelInfo[node.id] = {
                     node: node,
@@ -182,6 +196,20 @@
                 } else {
                     panelInfo.panel.dialog("option", "title", title);
                 }
+            }
+        },
+
+        setHeaderError: function(id, state, message) {
+            var panelInfo = this.panelInfo[id];
+            var header = panelInfo.panel.find(".header");
+            header.find(".message").remove();
+            if(state) {
+                header.addClass("error");
+                if(message) {
+                    header.append(this.headerErrorTemplate({message: message}));
+                }
+            } else {
+                header.removeClass("error");
             }
         },
 
@@ -230,6 +258,20 @@
                 id = target.find(".panel").data("webvsedNodeId");
             }
             this.activatePanel(id);
+        },
+
+        handlePanelHeaderChange: function(event) {
+            var input = $(event.target);
+            var id = input.closest(".panel").data("webvsedNodeId");
+            var node = this.panelInfo[id].node;
+            var name = input.attr("name");
+            var value;
+            if(input.attr("type") == "checkbox") {
+                value = input.is(":checked");
+            } else {
+                value = input.val();
+            }
+            this.$el.trigger("headerChange", {name: name, value: value, node: node});
         }
     });
 

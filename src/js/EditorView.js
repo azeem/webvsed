@@ -67,7 +67,8 @@
 
             "resize > .row2 > .sidebar": "fixDimensions",
 
-            "panelActivate > .row2": "handlePanelActivate"
+            "panelActivate > .row2": "handlePanelActivate",
+            "headerChange > .row2": "handleHeaderChange"
         },
 
         initialize: function(opts) {
@@ -240,9 +241,12 @@
             this.panels.closePanel(node.id);
         },
 
-        toggleComponentEnable: function(node) {
-            node.component.enabled = !node.component.enabled;
-            if(node.component.enabled) {
+        componentEnable: function(node, enabled) {
+            if(_.isUndefined(enabled)) {
+                enabled = !node.component.enabled;
+            }
+            node.component.enabled = enabled;
+            if(enabled) {
                 $(node.element).removeClass("node-disabled");
             } else {
                 $(node.element).addClass("node-disabled");
@@ -250,28 +254,36 @@
         },
 
         setComponentId: function(node, newId) {
-            if(!newId) {
-                var message = "Enter new ID for " + node.component.id;
-                while(true) {
-                    newId = window.prompt(message);
-                    if(!newId) {
-                        return;
-                    }
-                    newId = $.trim(newId);
-                    if(!newId.match(/^[\w\d_-]+$/)) {
-                        message = ["ID should contain only alphanumeric, underscore or minus",
-                                   "Enter new ID for " + node.component.id].join("\n");
-                    } else {
-                        break;
+            newId = $.trim(newId);
+            if(!newId.match(/^[\w\d_-]+$/)) {
+                return false;
+            }
+
+            if(newId == node.component.id) {
+                return true;
+            }
+
+            var findId = function(node, id) {
+                if(node.component.id == id) {
+                    return true;
+                }
+                for(var i = 0;i < node.children.length;i++) {
+                    if(findId(node.children[i], id)) {
+                        return true;
                     }
                 }
+                return false;
+            };
+
+            if(findId(this.tree.tree("getNodeById", this.rootNodeId), newId)) {
+                return false;
             }
 
             node.component.id = newId;
             this.tree.tree("updateNode", node, newId);
-
-            // update tab/dialog title if open
             this.panels.updateTitle(node.id);
+
+            return true;
         },
 
         moveComponent: function(moveInfo) {
@@ -337,11 +349,23 @@
         },
 
         handleMenuEnableDisable: function() {
-            this.toggleComponentEnable(this.treeCtxtMenuNode);
+            this.componentEnable(this.treeCtxtMenuNode);
         },
 
         handleMenuSetId: function() {
-            this.setComponentId(this.treeCtxtMenuNode);
+            var message = "Enter new ID for " + node.component.id;
+            while(true) {
+                var newId = window.prompt(message);
+                if(!newId) {
+                    return;
+                }
+                if(!this.setComponentId(newId, treeCtxtMenuNode)) {
+                    message = ["ID should be unique and contain only alphanumeric, underscore or minus",
+                               "Enter new ID for " + node.component.id].join("\n");
+                } else {
+                    break;
+                }
+            }
         },
 
         handleToolbarInsert: function(event) {
@@ -386,6 +410,20 @@
             }
             this.toolbar.find(".pop").button("option", popButtonOptions);
             this.tree.tree("selectNode", panel.node);
+        },
+
+        handleHeaderChange: function(event, info) {
+            if(info.name == "id") {
+                var state = false;
+                var message;
+                if(!this.setComponentId(info.node, info.value)) {
+                    state = true;
+                    message = "ID should be unique and contain only alphanumeric, underscore or minus";
+                }
+                this.panels.setHeaderError(info.node.id, state, message);
+            } else if(info.name == "enabled") {
+                this.componentEnable(info.node, info.value);
+            }
         }
     });
 
