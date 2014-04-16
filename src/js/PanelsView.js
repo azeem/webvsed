@@ -19,12 +19,7 @@
 
         panelTemplate: _.template([
             "<div data-webvsed-node-id='<%= node.id %>' class='panel' id='webvsed-<%= node.id %>'>",
-            "    <% if(node.component.id !== 'root') { %>",
-            "        <div class='header'>",
-            "            <input name='enabled' <%= (node.component.enabled)?'checked=\\'checked\\'':'' %> type='checkbox'/>",
-            "            <input name='id' type='text' value='<%= node.component.id %>'/>",
-            "        </div>",
-            "    <% } %>",
+            "    <%= header %>",
             "    <div class='body'>",
             "    </div>",
             "</div>"
@@ -36,6 +31,15 @@
             "<% } else { %>",
             "    <span class='ui-icon ui-icon-arrowthick-1-sw'></span>Pop In",
             "<% } %>"
+        ].join("")),
+
+        headerTemplate: _.template([
+            "<% if(node.component.id !== 'root') { %>",
+            "    <div class='header'>",
+            "        <input name='enabled' <%= (node.component.enabled)?'checked=\\'checked\\'':'' %> type='checkbox'/>",
+            "        <input name='id' type='text' value='<%= node.component.id %>'/>",
+            "    </div>",
+            "<% } %>",
         ].join("")),
 
         headerErrorTemplate: _.template("<div class='message ui-state-error ui-corner-all'><%= message %></div>"),
@@ -52,7 +56,10 @@
             "mousedown > .ui-dialog":            "handlePanelActivate",
 
             "change > .tabs > .panel .header input":     "handlePanelHeaderChange",
-            "change > .ui-dialog > .panel .header input":     "handlePanelHeaderChange"
+            "change > .ui-dialog > .panel .header input":     "handlePanelHeaderChange",
+
+            "valueChange > .tabs > .panel":     "handlePanelValueChange",
+            "valueChange > .ui-dialog > .panel":     "handlePanelValueChange"
         },
 
         initialize: function() {
@@ -162,22 +169,32 @@
             if(!panelInfo) {
                 var tab = $(this.tabTemplate({node: node}));
                 this.tabList.append(tab);
-                var panel = $(this.panelTemplate({node: node}));
+                var panelHeader = this.headerTemplate({node: node});
+                var panel = $(this.panelTemplate({node: node, header: panelHeader}));
                 this.tabs.append(panel);
 
                 var componentClass = node.component.constructor.Meta.name;
-                var formDef = WebvsEd.FormDefs[componentClass] || WebvsEd.FormDefs.Default;
-                var form = WebvsEd.makeField(formDef);
+                var form;
+                var isDefaultForm = false;
+                if(componentClass in WebvsEd.FormDefs) {
+                    form = WebvsEd.makeField(WebvsEd.FormDefs[componentClass]);
+                } else {
+                    form = WebvsEd.makeField(WebvsEd.FormDefs.Default);
+                    isDefaultForm = true;
+                }
                 panel.find(".body").append(form.el);
 
                 this.panelInfo[node.id] = {
                     node: node,
                     tab: tab,
                     panel: panel,
-                    form: form
+                    form: form,
+                    isDefaultForm: isDefaultForm
                 };
 
                 this.panelOrder.push(node.id);
+
+                this.updateForm(node.id);
 
                 // refresh and set the active tab
                 this.tabs.tabs("refresh");
@@ -211,6 +228,25 @@
             } else {
                 header.removeClass("error");
             }
+        },
+
+        updateHeader: function(id) {
+            var panelInfo = this.panelInfo[id];
+            panelInfo.panel.find(".header").replaceWith(this.headerTemplate({node: panelInfo.node}));
+        },
+
+        updateForm: function(id) {
+            var panelInfo = this.panelInfo[id];
+            if(panelInfo.isDefaultForm) {
+                var json = panelInfo.node.component.generateOptionsObj();
+                panelInfo.form.setValue(json);
+            } else {
+                panelInfo.form.setValue(panelInfo.node.component.opts);
+            }
+        },
+
+        isDefaultForm: function(id) {
+            return this.panelInfo[id].isDefaultForm;
         },
 
         // event handlers
@@ -263,7 +299,7 @@
         handlePanelHeaderChange: function(event) {
             var input = $(event.target);
             var id = input.closest(".panel").data("webvsedNodeId");
-            var node = this.panelInfo[id].node;
+            var panelInfo = this.panelInfo[id];
             var name = input.attr("name");
             var value;
             if(input.attr("type") == "checkbox") {
@@ -271,7 +307,23 @@
             } else {
                 value = input.val();
             }
-            this.$el.trigger("headerChange", {name: name, value: value, node: node});
+            this.$el.trigger("headerChange", {
+                name: name,
+                value: value,
+                node: panelInfo.node,
+                isDefaultForm: panelInfo.isDefaultForm
+            });
+        },
+
+        handlePanelValueChange: function(event, field, value) {
+            var id = field.$el.closest(".panel").data("webvsedNodeId");
+            var panelInfo = this.panelInfo[id];
+            this.$el.trigger("panelValueChange", {
+                node: panelInfo.node,
+                field: field,
+                value: value,
+                isDefaultForm: panelInfo.isDefaultForm
+            });
         }
     });
 

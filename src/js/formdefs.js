@@ -4,6 +4,7 @@
 
     FormDefs.Default = {
         type: "JSONField",
+        keyupChange: true,
         title: "Component Options"
     };
 

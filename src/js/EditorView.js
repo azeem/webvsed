@@ -68,7 +68,9 @@
             "resize > .row2 > .sidebar": "fixDimensions",
 
             "panelActivate > .row2": "handlePanelActivate",
-            "headerChange > .row2": "handleHeaderChange"
+            "headerChange > .row2": "handleHeaderChange",
+
+            "panelValueChange > .row2": "handlePanelValueChange"
         },
 
         initialize: function(opts) {
@@ -246,11 +248,17 @@
                 enabled = !node.component.enabled;
             }
             node.component.enabled = enabled;
-            if(enabled) {
+            this.updateHeaderDetails(node);
+        },
+
+        updateHeaderDetails: function(node) {
+            this.tree.tree("updateNode", node, node.component.id);
+            if(node.component.enabled) {
                 $(node.element).removeClass("node-disabled");
             } else {
                 $(node.element).addClass("node-disabled");
             }
+            this.panels.updateTitle(node.id);
         },
 
         setComponentId: function(node, newId) {
@@ -280,9 +288,7 @@
             }
 
             node.component.id = newId;
-            this.tree.tree("updateNode", node, newId);
-            this.panels.updateTitle(node.id);
-
+            this.updateHeaderDetails(node);
             return true;
         },
 
@@ -349,22 +355,32 @@
         },
 
         handleMenuEnableDisable: function() {
-            this.componentEnable(this.treeCtxtMenuNode);
+            var node = this.treeCtxtMenuNode;
+            this.componentEnable(node);
+            this.panels.updateHeader(node.id);
+            if(this.panels.isDefaultForm(node.id)) {
+                this.panels.updateForm(node.id);
+            }
         },
 
         handleMenuSetId: function() {
+            var node = this.treeCtxtMenuNode;
             var message = "Enter new ID for " + node.component.id;
             while(true) {
                 var newId = window.prompt(message);
                 if(!newId) {
                     return;
                 }
-                if(!this.setComponentId(newId, treeCtxtMenuNode)) {
+                if(!this.setComponentId(node, newId)) {
                     message = ["ID should be unique and contain only alphanumeric, underscore or minus",
                                "Enter new ID for " + node.component.id].join("\n");
                 } else {
                     break;
                 }
+            }
+            this.panels.updateHeader(node.id);
+            if(this.panels.isDefaultForm(node.id)) {
+                this.panels.updateForm(node.id);
             }
         },
 
@@ -423,6 +439,40 @@
                 this.panels.setHeaderError(info.node.id, state, message);
             } else if(info.name == "enabled") {
                 this.componentEnable(info.node, info.value);
+            }
+            this.updateHeaderDetails(info.node);
+            if(info.isDefaultForm) {
+                this.panels.updateForm(info.node.id);
+            }
+        },
+
+        handlePanelValueChange: function(event, info) {
+            var errorMessage;
+            if(info.isDefaultForm) {
+                var parent = info.node.component.parent;
+
+                var newComponent;
+                try {
+                    newComponent = parent.createComponent(info.value);
+                } catch(err) {
+                    errorMessage = err.message;
+                }
+
+                if(newComponent) {
+                    var pos = info.node.parent.children.indexOf(info.node);
+                    parent.detachComponent(info.node.component.id);
+                    parent.addComponent(newComponent, pos);
+                    info.node.component = newComponent;
+
+                    this.updateHeaderDetails(info.node);
+                    this.panels.updateHeader(info.node.id);
+                    this.panels.updateForm(info.node.id);
+                }
+            }
+
+            if(errorMessage) {
+                info.field.addMessage(errorMessage);
+                info.field.renderMessages();
             }
         }
     });
