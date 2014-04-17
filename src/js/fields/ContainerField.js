@@ -5,7 +5,7 @@
 
         baseTemplate: _.template([
             "<% if(title) { %>",
-            "    <legend class='title'><%= title %></legend>",
+            "    <legend class='title'><button><%= title %></button></legend>",
             "<% } %>",
             "<div class='content'>",
             "    <div class='fieldBody'></div>",
@@ -14,7 +14,8 @@
         ].join("")),
 
         events: _.extend({
-            "click > .title": "toggleCollapse"
+            "click > .title": "toggleCollapse",
+            "valueChange .fieldBody": "handleChildValueChange"
         }, WebvsEd.Field.prototype.events),
 
         initialize: function(opts) {
@@ -22,6 +23,9 @@
                 this.collapsible = true;
                 this.startCollapsed = opts.collapsed?true:false;
             }
+
+            this.noChangeBubble = opts.noChangeBubble?true:false;
+
             // default required should be false for container fields
             var newOpts = _.extend({required: false}, opts);
             WebvsEd.Field.prototype.initialize.call(this, newOpts);
@@ -29,7 +33,11 @@
 
         render: function() {
             WebvsEd.Field.prototype.render.apply(this, arguments);
+            if(this.collapsible) {
+                this.$el.addClass("collapsible");
+            }
             if(this.startCollapsed) {
+                this.$el.addClass("collapsed");
                 this.$closest(".content").hide();
             }
         },
@@ -38,7 +46,19 @@
             if(!this.collapsible) {
                 return;
             }
-            this.$closest(".content").slideToggle();
+            var content = this.$closest(".content");
+            if(content.is(":hidden")) {
+                this.$el.removeClass("collapsed");
+            } else {
+                this.$el.addClass("collapsed");
+            }
+            content.slideToggle();
+        },
+
+        handleChildValueChange: function(event) {
+            if(this.noChangeBubble) {
+                event.stopPropagation();
+            }
         }
     });
 

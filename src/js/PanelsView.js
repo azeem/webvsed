@@ -62,9 +62,10 @@
             "valueChange > .ui-dialog > .panel":     "handlePanelValueChange"
         },
 
-        initialize: function() {
+        initialize: function(opts) {
             this.panelInfo = {};
             this.panelOrder = [];
+            this.webvsMain = opts.webvsMain;
         },
 
         render: function() {
@@ -176,7 +177,11 @@
                 var componentClass = node.component.constructor.Meta.name;
                 var form;
                 var isDefaultForm = false;
-                if(componentClass in WebvsEd.FormDefs) {
+                var isRootForm = false;
+                if(node.component.id == "root") {
+                    form = WebvsEd.makeField(WebvsEd.FormDefs.Main);
+                    isRootForm = true;
+                } else if(componentClass in WebvsEd.FormDefs) {
                     form = WebvsEd.makeField(WebvsEd.FormDefs[componentClass]);
                 } else {
                     form = WebvsEd.makeField(WebvsEd.FormDefs.Default);
@@ -189,7 +194,8 @@
                     tab: tab,
                     panel: panel,
                     form: form,
-                    isDefaultForm: isDefaultForm
+                    isDefaultForm: isDefaultForm,
+                    isRootForm: isRootForm
                 };
 
                 this.panelOrder.push(node.id);
@@ -240,6 +246,9 @@
             if(panelInfo.isDefaultForm) {
                 var json = panelInfo.node.component.generateOptionsObj();
                 panelInfo.form.setValue(json);
+            } else if(panelInfo.isRootForm) {
+                panelInfo.form.setValue(panelInfo.node.component.opts);
+                panelInfo.form.getField("meta").setValue(this.webvsMain.meta);
             } else {
                 panelInfo.form.setValue(panelInfo.node.component.opts);
             }

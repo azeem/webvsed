@@ -24,9 +24,14 @@
 
             for(var i = 0;i < this.fieldOpts.length;i++) {
                 var field = WebvsEd.makeField(this.fieldOpts[i], this);
+                field.setParent(this);
                 this.fields[field.key] = field;
                 this.$closest(".objectItems").append(field.el);
             }
+        },
+
+        getField: function(key) {
+            return this.fields[key];
         },
 
         renderValue: function() {

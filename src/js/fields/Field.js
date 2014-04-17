@@ -72,6 +72,8 @@
 
             this.title = opts.title;
 
+            this.noTrigger = opts.noTrigger?true:false;
+
             if(_.isUndefined(opts.required)) {
                 this.required = true;
             } else {
@@ -93,6 +95,9 @@
         },
 
         render: function() {
+            if(!this.title) {
+                this.$el.addClass("no-title");
+            }
             this.$el.html(this.baseTemplate({
                 title: this.title
             }));
@@ -200,7 +205,7 @@
         cleanAndTrigger: function() {
             this.clean();
             this.renderMessages();
-            if(this.valid) {
+            if(this.valid && !this.noTrigger) {
                 this.$el.trigger("valueChange", [this, this.value]);
             }
         },
@@ -214,11 +219,11 @@
         },
 
         getPath: function() {
-            var parentPath;
+            var prefix = "";
             if(this.parent) {
-                path = this.parent.getPath();
+                prefix = this.parent.getPath() + ".";
             }
-            return (parentPath + "." + this.key);
+            return (prefix + this.key);
         },
 
         className: function() {

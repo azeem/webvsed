@@ -17,34 +17,71 @@
     background-color: rgba(255,0,0,0.1);
 }
 
-.webvsed-arrayfield > .content > .fieldBody {
-    > .controls {
-        background-color: #EEEEEE;
-        padding: 3px;
-        margin: 0px 0px 4px 0px;
+.webvsed-containerfield() {
+    &.no-title {
+        border: none;
+        padding: 0px;
     }
 
-    .arrayItem > .controls {
-        display: none;
-        float: right;
-        padding: 3px;
-        margin: 0px 0px 4px 0px;
+    .title button {
+        border: none;
+        background: none;
+    }
 
-        .movehandle {
-            display: inline-block;
-            background-color: transparent;
-            cursor: move;
-            width: 16px;
-            height: 16px;
-            margin: 0px;
-            vertical-align: middle;
+    &.collapsed {
+        border: 1px dashed #AAAAAA;
+    }
+
+    &.collapsible {
+        &.collapsed .title button {
+            background-color: #E4E4E4;
+        }
+
+        .title button {
+            border: 1px solid #AAAAAA;
+            border-radius: 3px;
+            background-color: #FFFFFF;
+            padding: 3px 5px;
+            cursor: pointer;
         }
     }
+}
 
-    .arrayItem:hover {
-        background-color: #FCFBF3;
+.webvsed-objectfield {
+    .webvsed-containerfield();
+}
+
+.webvsed-arrayfield {
+    .webvsed-containerfield();
+    > .content > .fieldBody {
         > .controls {
-            display: block;
+            background-color: #EEEEEE;
+            padding: 3px;
+            margin: 0px 0px 4px 0px;
+        }
+
+        .arrayItem > .controls {
+            display: none;
+            float: right;
+            padding: 3px;
+            margin: 0px 0px 4px 0px;
+
+            .movehandle {
+                display: inline-block;
+                background-color: transparent;
+                cursor: move;
+                width: 16px;
+                height: 16px;
+                margin: 0px;
+                vertical-align: middle;
+            }
+        }
+
+        .arrayItem:hover {
+            background-color: #FCFBF3;
+            > .controls {
+                display: block;
+            }
         }
     }
 }

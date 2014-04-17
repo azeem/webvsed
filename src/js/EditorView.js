@@ -130,7 +130,7 @@
             });
 
             // build panels
-            this.panels = new WebvsEd.PanelsView();
+            this.panels = new WebvsEd.PanelsView({webvsMain: this.webvsMain});
             this.$(".row2").prepend(this.panels.el);
             this.panels.render();
 
@@ -467,6 +467,15 @@
                     this.updateHeaderDetails(info.node);
                     this.panels.updateHeader(info.node.id);
                     this.panels.updateForm(info.node.id);
+                }
+            } else if (info.node.id == this.rootNodeId) {
+                var fieldPath = info.field.getPath();
+                fieldPath = fieldPath.substring(fieldPath.indexOf(".") + 1);
+
+                if(fieldPath == "meta") {
+                    this.webvsMain.setMeta(info.value);
+                } else {
+                    node.component.setOption(fieldPath, info.value);
                 }
             }
 
