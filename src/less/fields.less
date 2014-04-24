@@ -9,6 +9,15 @@
         list-style: none;
     }
 
+    button {
+        border: 1px solid #AAAAAA;
+        border-radius: 3px;
+        background-color: #E4E4E4;
+        padding: 3px 5px;
+        cursor: pointer;
+    }
+
+    clear: both;
     padding: 5px;
     margin: 2px 0px;
 }
@@ -23,26 +32,17 @@
         padding: 0px;
     }
 
-    .title button {
-        border: none;
-        background: none;
-    }
-
     &.collapsed {
         border: 1px dashed #AAAAAA;
     }
 
     &.collapsible {
-        &.collapsed .title button {
-            background-color: #E4E4E4;
+        .title button {
+            background-color: #FFFFFF;
         }
 
-        .title button {
-            border: 1px solid #AAAAAA;
-            border-radius: 3px;
-            background-color: #FFFFFF;
-            padding: 3px 5px;
-            cursor: pointer;
+        &.collapsed .title button {
+            background-color: #E4E4E4;
         }
     }
 }
@@ -82,6 +82,50 @@
             > .controls {
                 display: block;
             }
+        }
+    }
+}
+
+@urifield-width: 250px;
+@urifield-preview-width: 50px;
+.webvsed-urifield {
+    .container {
+        width: @urifield-width;
+    }
+
+    .line1 {
+        input {
+            width: @urifield-width - @urifield-preview-width - 20;
+            &.is-data {
+                color: #636363;
+            }
+        }
+    }
+
+    .line2 {
+        text-align: right;
+        margin-top: 3px;
+        margin-right: @urifield-preview-width + 15;
+    }
+
+
+    .preview {
+        text-align: center;
+        font-size: 70%;
+        float: right;
+        height: @urifield-preview-width;
+        width: @urifield-preview-width;
+        line-height: @urifield-preview-width;
+        border: 1px solid #AAAAAA;
+        background-color: #888888;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 0px;
+        span {
+          display: inline-block;
+          vertical-align: middle;
+          line-height: normal;      
         }
     }
 }
