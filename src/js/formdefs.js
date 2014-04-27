@@ -37,6 +37,29 @@
                 ]
             },
             {
+                type: "ObjectField",
+                key: "resources",
+                title: "Resources",
+                noChangeBubble: true,
+                collapsible: true,
+                collapsed: true,
+                fields: [
+                    {
+                        type: "KeyValueField",
+                        key: "uris",
+                        keyField: {
+                            type: "TextField",
+                            title: "Name"
+                        },
+                        valueField: {
+                            type: "URIField",
+                            title: "Resource",
+                            key: "uri"
+                        }
+                    }
+                ]
+            },
+            {
                 type: "BooleanField",
                 key: "clearFrame",
                 label: "Clear Frame"

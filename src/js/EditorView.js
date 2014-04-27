@@ -474,8 +474,12 @@
 
                 if(fieldPath == "meta") {
                     this.webvsMain.setMeta(info.value);
+                } else if(fieldPath == "resources") {
+                    var rsrcMan = this.webvsMain.rsrcMan;
+                    rsrcMan.clear();
+                    rsrcMan.registerUri(info.value.uris);
                 } else {
-                    node.component.setOption(fieldPath, info.value);
+                    info.node.component.setOption(fieldPath, info.value);
                 }
             }
 

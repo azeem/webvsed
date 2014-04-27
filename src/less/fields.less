@@ -17,8 +17,12 @@
         cursor: pointer;
     }
 
-    padding: 5px;
-    margin: 2px 0px;
+    padding: 1px 5px;
+    margin: 0px 0px 5px 0px;
+
+    &:last-child {
+        margin: 0px;
+    }
 }
 
 .webvsed-field.has-message {
@@ -26,6 +30,8 @@
 }
 
 .webvsed-containerfield() {
+    padding: 5px;
+
     &.no-title {
         border: none;
         padding: 0px;
@@ -56,6 +62,8 @@
 
         > .items > .item {
             border-bottom: 1px dashed #AAAAAA;
+            padding: 0px 0px 5px 0px;
+            margin: 0px 0px 5px 0px;
 
             &:last-child {
                 border-bottom: none;
@@ -80,7 +88,7 @@
             }
 
             &:hover {
-                background-color: #FCFBF3;
+                background-color: #F0EAC0;
                 > .controls {
                     display: block;
                 }
