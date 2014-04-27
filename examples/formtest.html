@@ -55,6 +55,21 @@
                 }
             },
             {
+                key: "pairs",
+                title: "Key Val",
+                type: "KeyValueField",
+                keyField: {
+                    type: "TextField",
+                    label: "Key"
+                },
+                valueField: {
+                    type: "EnumField",
+                    title: "Value",
+                    enum: ["foo", "bar"],
+                    enumLabels: ["Foo", "Bar"]
+                }
+            },
+            {
                 key: "text",
                 keyupChange: true,
                 debounceWait: 1000,

@@ -9,12 +9,12 @@
             "        <span class='ui-icon ui-icon-plus'></span>",
             "    </button>",
             "</div>",
-            "<div class='arrayItems'>",
+            "<div class='arrayItems items'>",
             "</div>",
         ].join("")),
 
         itemTemplate: _.template([
-            "<div class='arrayItem'>",
+            "<div class='arrayItem item'>",
             "    <div class='controls'>",
             "        <button class='removeItem ui-button' title='Remove Item'>",
             "            <span class='ui-icon ui-icon-minus'></span>",
@@ -48,7 +48,6 @@
             var item = $(this.itemTemplate());
             this.$closest(".arrayItems").append(item);
             item.find(".itemBody").append(field.el);
-            item.data("arrayFieldItemIndex", this.fields.length);
 
             this.fields.push(field);
             if(value) {
@@ -89,7 +88,9 @@
             } else {
                 this.value.push(value);
             }
-            this.cleanAndTrigger();
+            if(field.valid) {
+                this.cleanAndTrigger();
+            }
         },
 
         handleRemoveItem: function(event) {

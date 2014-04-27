@@ -149,14 +149,14 @@
             for(var i = 0;i < this.validators.length;i++) {
                 var validator = this.validators[i];
                 if($.isFunction(validator)) {
-                    validation = validator(this.value);
+                    validation = validator(this.value, this);
                 } else {
                     var opts = validator;
                     validator = WebvsEd.validatorRegistry[validator.type];
                     if(!validator) {
                         throw new Error("Unknown validator " + validator.type);
                     }
-                    validation = validator(opts, this.value);
+                    validation = validator(opts, this.value, this);
                 }
                 if(validation instanceof WebvsEd.InvalidValue) {
                     failed = true;
@@ -206,7 +206,7 @@
             this.clean();
             this.renderMessages();
             if(this.valid && !this.noTrigger) {
-                this.$el.trigger("valueChange", [this, this.value]);
+                this.$el.trigger("valueChange", [this, this.getValue()]);
             }
         },
 

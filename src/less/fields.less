@@ -17,7 +17,6 @@
         cursor: pointer;
     }
 
-    clear: both;
     padding: 5px;
     margin: 2px 0px;
 }
@@ -47,12 +46,7 @@
     }
 }
 
-.webvsed-objectfield {
-    .webvsed-containerfield();
-}
-
-.webvsed-arrayfield {
-    .webvsed-containerfield();
+.webvsed-list-container() {
     > .content > .fieldBody {
         > .controls {
             background-color: #EEEEEE;
@@ -60,30 +54,53 @@
             margin: 0px 0px 4px 0px;
         }
 
-        .arrayItem > .controls {
-            display: none;
-            float: right;
-            padding: 3px;
-            margin: 0px 0px 4px 0px;
+        > .items > .item {
+            border-bottom: 1px dashed #AAAAAA;
 
-            .movehandle {
-                display: inline-block;
-                background-color: transparent;
-                cursor: move;
-                width: 16px;
-                height: 16px;
-                margin: 0px;
-                vertical-align: middle;
+            &:last-child {
+                border-bottom: none;
             }
-        }
 
-        .arrayItem:hover {
-            background-color: #FCFBF3;
             > .controls {
-                display: block;
+                display: none;
+                float: right;
+                padding: 4px;
+                margin: 0px 0px 4px 4px;
+                background-color: white;
+
+                .movehandle {
+                    display: inline-block;
+                    background-color: transparent;
+                    cursor: move;
+                    width: 16px;
+                    height: 16px;
+                    margin: 0px;
+                    vertical-align: middle;
+                }
+            }
+
+            &:hover {
+                background-color: #FCFBF3;
+                > .controls {
+                    display: block;
+                }
             }
         }
     }
+}
+
+.webvsed-objectfield {
+    .webvsed-containerfield();
+}
+
+.webvsed-arrayfield {
+    .webvsed-containerfield();
+    .webvsed-list-container();
+}
+
+.webvsed-keyvaluefield {
+    .webvsed-containerfield();
+    .webvsed-list-container();
 }
 
 @urifield-width: 250px;

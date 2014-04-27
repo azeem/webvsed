@@ -62,8 +62,11 @@
         },
 
         renderValue: function() {
-            this.$(".text").val(this.value);
+            if(!this.isData) {
+                this.$(".text").val(this.value);
+            }
             this.setPreview();
+            this.setDataPlaceHolder();
         },
 
         setPreview: function() {
