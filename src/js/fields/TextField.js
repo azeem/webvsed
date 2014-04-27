@@ -5,12 +5,9 @@
 
         inputTemplate: _.template([
             "<% if(label) { %>",
-            "    <label><%= label %>",
-            "        <input class='input' type='text'/>",
-            "    </label>",
-            "<% } else { %>",
-            "    <input class='input' type='text'/>",
+            "    <label class='fixed-width' for='<%= fid %>'><%= label %></label>",
             "<% } %>",
+            "<input id='<%= fid %>' class='input' type='text'/>",
         ].join("")),
 
         events: _.extend({
@@ -25,6 +22,7 @@
         render: function() {
             WebvsEd.Field.prototype.render.apply(this, arguments);
             this.fieldBody.append(this.inputTemplate({
+                fid: this.fid,
                 label: this.label
             }));
         },

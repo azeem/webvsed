@@ -67,4 +67,88 @@
         ]
     };
 
+    FormDefs.SuperScope = {
+        type: "ObjectField",
+        noTrigger: true,
+        fields: [
+            {
+                type: "EnumField",
+                label: "Blend Mode",
+                key: "blendMode",
+                enum: _.keys(Webvs.BlendModes)
+            },
+            {
+                type: "EnumField",
+                label: "Data Source",
+                key: "source",
+                enum: _.keys(Webvs.Source)
+            },
+            {
+                type: "EnumField",
+                label: "Source Channel",
+                key: "channel",
+                enum: _.keys(Webvs.Channels)
+            },
+            {
+                type: "EnumField",
+                label: "Draw Mode",
+                key: "drawMode",
+                enum: _.keys(Webvs.SuperScope.DrawModes)
+            },
+            {
+                type: "IntegerField",
+                label: "Thickness",
+                key: "thickness",
+                spinner: true
+            },
+            {
+                type: "IntegerField",
+                label: "Clone",
+                key: "clone",
+                spinner: true
+            },
+            {
+                type: "ObjectField",
+                title: "Code",
+                collapsible: true,
+                collapsed: true,
+                key: "code",
+                fields: [
+                    {
+                        type: "TextAreaField",
+                        key: "init",
+                        title: "Init",
+                        rows: 5,
+                        keyupChange: true,
+                        required: false
+                    },
+                    {
+                        type: "TextAreaField",
+                        key: "perFrame",
+                        title: "Per Frame",
+                        rows: 5,
+                        keyupChange: true,
+                        required: false
+                    },
+                    {
+                        type: "TextAreaField",
+                        key: "onBeat",
+                        title: "On Beat",
+                        rows: 5,
+                        keyupChange: true,
+                        required: false
+                    },
+                    {
+                        type: "TextAreaField",
+                        key: "perPoint",
+                        title: "Per Point",
+                        rows: 5,
+                        keyupChange: true,
+                        required: false
+                    }
+                ]
+            }
+        ]
+    };
+
 })(jQuery, _, Backbone);

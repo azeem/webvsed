@@ -1,7 +1,7 @@
 (function($, _, Backbone) {
 
-    WebvsEd.IntegerField = WebvsEd.TextField.extend({
-        fieldName: "IntegerField",
+    WebvsEd.NumberField = WebvsEd.TextField.extend({
+        fieldName: "NumberField",
 
         events: _.extend({
             "spinchange .input": "handleChange"
@@ -9,6 +9,7 @@
 
         initialize: function(opts) {
             this.spinner = opts.spinner;
+            this.integer = opts.integer?true:false;
             WebvsEd.TextField.prototype.initialize.apply(this, arguments);
         },
 
@@ -18,9 +19,14 @@
                 return rawValue;
             }
 
-            var value = parseInt(rawValue);
+            var value;
+            if(this.integer) {
+              value = parseInt(rawValue);
+            } else {
+              value = parseFloat(rawValue);
+            }
             if(isNaN(value)) {
-                return new WebvsEd.InvalidValue(rawValue, "Value should be an integer");
+                return new WebvsEd.InvalidValue(rawValue, "Value should be a " + (this.integer?"integer":"number"));
             } else {
                 return value;
             }

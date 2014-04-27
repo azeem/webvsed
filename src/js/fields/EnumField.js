@@ -4,7 +4,10 @@
         fieldName: "EnumField",
 
         selectTemplate: _.template([
-            "<select class='input'>",
+            "<% if(label) { %>",
+            "    <label class='fixed-width' for='<%= fid %>'><%= label %></label>",
+            "<% } %>",
+            "<select id='<%= fid %>' class='input'>",
             "<% _.each(enums, function(enumItem) { %>",
             "    <option value='<%= enumItem.value %>'><%= enumItem.label %></option>",
             "<% }); %>",
@@ -14,7 +17,7 @@
         radioTemplate: _.template([
             "<fieldset class='input'>",
             "<% _.each(enums, function(enumItem) { %>",
-            "    <label><input type='radio' name='<%= name %>' value='<%= enumItem.value %>'/><%= enumItem.label %></label>",
+            "    <label><input type='radio' name='<%= fid %>' value='<%= enumItem.value %>'/><%= enumItem.label %></label>",
             "<% }); %>",
             "</fieldset>",
         ].join("")),
@@ -26,6 +29,7 @@
         initialize: function(opts) {
             this.enum = opts.enum;
             this.enumLabels = opts.enumLabels || {};
+            this.label = opts.label;
             this.radio = opts.radio?true:false;
             WebvsEd.Field.prototype.initialize.apply(this, arguments);
         },
@@ -33,12 +37,12 @@
         render: function() {
             WebvsEd.Field.prototype.render.apply(this, arguments);
 
-            WebvsEd.EnumField.radioNameCounter = WebvsEd.EnumField.radioNameCounter || 0;
             var data = {
+                label: this.label,
                 enums: _.map(this.enum, function(value) {
                     return {value: value, label: this.enumLabels[value] || value};
                 }, this),
-                fieldName: "enumfield-radio"+WebvsEd.EnumField.radioNameCounter++
+                fid: this.fid
             };
 
             if(this.radio) {

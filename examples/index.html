@@ -37,6 +37,11 @@
         analyser: analyser
     });
     webvsMain.start();
+    webvsMain.loadPreset({
+        components: [
+            {type: "SuperScope"}
+        ]
+    });
 
     var editor = new WebvsEd.EditorView({
         webvsMain: webvsMain

@@ -156,7 +156,7 @@
             if(component instanceof Webvs.Container) {
                 node.children = [];
                 for(var i = 0;i < component.components.length;i++) {
-                    node.children.push(this._buildTree(component.components[i]));
+                    node.children.push(this.buildTree(component.components[i]));
                 }
             }
             return node;

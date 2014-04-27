@@ -64,10 +64,12 @@
         ].join("")),
 
         initialize: function(opts) {
+            WebvsEd.Field.fieldIdCounter = WebvsEd.Field.fieldIdCounter || 0;
+            this.fid = this.fieldName + WebvsEd.Field.fieldIdCounter++;
+
             this.key = opts.key;
             if(!this.key) {
-                WebvsEd.Field.fieldKeyCounter = WebvsEd.Field.fieldKeyCounter || 0;
-                this.key = this.fieldName + WebvsEd.Field.fieldKeyCounter++;
+                this.key = this.fid;
             }
 
             this.title = opts.title;
