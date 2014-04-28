@@ -3,6 +3,7 @@ module.exports = function(grunt) {
         "src/js/Base.js",
         "src/js/fields/Field.js",
         "src/js/fields/URIField.js",
+        "src/js/fields/ColorField.js",
         "src/js/fields/TextField.js",
         "src/js/fields/NumberField.js",
         "src/js/fields/BooleanField.js",

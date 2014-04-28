@@ -4,6 +4,7 @@
     <title>WebVS Editor</title>
     <link rel="stylesheet" type="text/css" href="../bower_components/jquery-ui/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="../bower_components/jqtree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/spectrum/spectrum.css">
     <link rel="stylesheet" type="text/css" href="../build/webvsed.css">
 </head>
 <body>
@@ -14,9 +15,10 @@
   <script type="text/javascript" src="../bower_components/jquery-ui/ui/jquery-ui.js"></script>
   <script type="text/javascript" src="../bower_components/jqtree/tree.jquery.js"></script>
   <script type="text/javascript" src="../bower_components/jquery-closest-descendant/dist/closestDescendant.js"></script>
+  <script type="text/javascript" src="../bower_components/spectrum/spectrum.js"></script>
   <script type="text/javascript" src="../bower_components/underscore/underscore.js"></script>
   <script type="text/javascript" src="../bower_components/backbone/backbone.js"></script>
-
+  <script type="text/javascript" src="../bower_components/webvs/build/webvs.js"></script>
   <script type="text/javascript" src="../build/webvsed.js"></script>
 
   <script type="text/javascript">
@@ -26,13 +28,18 @@
         collapsible: true,
         fields: [
             {
+                key: "color",
+                type: "ColorField",
+                label: "color"
+            },
+            {
                 key: "uri",
                 type: "URIField",
                 title: "URI"
             },
             {
                 key: "frameCount",
-                type: "IntegerField",
+                type: "NumberField",
                 label: "integer item",
                 default: 123,
             },

@@ -124,6 +124,18 @@
                 }
             },
             {
+                type: "ArrayField",
+                title: "Colors",
+                key: "colors",
+                collapsible: true,
+                collapsed: true,
+                noChangeBubble: true,
+                arrayItem: {
+                    type: "ColorField",
+                    default: "#ffffff"
+                }
+            },
+            {
                 type: "ObjectField",
                 title: "Code",
                 collapsible: true,

@@ -32,7 +32,7 @@
     WebvsEd.makeField = function(opts, parent) {
         var fieldClass = WebvsEd[opts.type];
         if(!fieldClass) {
-            throw new Error("Unknown field class " + fieldClass);
+            throw new Error("Unknown field class " + opts.type);
         }
         var field = new fieldClass(opts);
         field.setParent(parent);
