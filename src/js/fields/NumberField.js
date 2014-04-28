@@ -4,11 +4,17 @@
         fieldName: "NumberField",
 
         events: _.extend({
-            "spinchange .input": "handleChange"
+            "spinchange .input": "handleChange",
+            "spinstop .input": "handleSpinStop"
         }, WebvsEd.TextField.prototype.events),
 
         initialize: function(opts) {
-            this.spinner = opts.spinner;
+            if($.isPlainObject(opts.spinner)) {
+                this.spinner = opts.spinner;
+            } else {
+                this.spinner = {};
+            }
+
             this.integer = opts.integer?true:false;
             WebvsEd.TextField.prototype.initialize.apply(this, arguments);
         },
@@ -35,12 +41,14 @@
         render: function() {
             WebvsEd.TextField.prototype.render.apply(this, arguments);
             if(this.spinner) {
-                var opts = {};
-                if($.isPlainObject(this.spinner)) {
-                    opts = this.spinner;
-                }
-                this.$closest(".input").spinner(opts);
+                this.$closest(".input").spinner(this.spinner);
             }
+        },
+
+        // events
+        handleSpinStop: function() {
+            console.log("here");
+            this.$closest(".input").change();
         }
     });
 
