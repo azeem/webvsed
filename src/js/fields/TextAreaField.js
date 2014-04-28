@@ -15,7 +15,7 @@
             this.cols = opts.cols || 50;
 
             this.keyupChange = opts.keyupChange?true:false;
-            this.debounceWait = _.isUndefined(opts.debounceWait)?3000:opts.debounceWait;
+            this.debounceWait = _.isUndefined(opts.debounceWait)?1000:opts.debounceWait;
 
             if(this.keyupChange) {
                 this.debouncedChangeValue = _.debounce(_.bind(this.changeValue, this), this.debounceWait);

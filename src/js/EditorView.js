@@ -468,18 +468,24 @@
                     this.panels.updateHeader(info.node.id);
                     this.panels.updateForm(info.node.id);
                 }
-            } else if (info.node.id == this.rootNodeId) {
+            } else {
+                var isRoot = info.node.id == this.rootNodeId;
                 var fieldPath = info.field.getPath();
                 fieldPath = fieldPath.substring(fieldPath.indexOf(".") + 1);
 
-                if(fieldPath == "meta") {
+                if(isRoot && fieldPath == "meta") {
                     this.webvsMain.setMeta(info.value);
-                } else if(fieldPath == "resources") {
+                } else if(isRoot && fieldPath == "resources") {
                     var rsrcMan = this.webvsMain.rsrcMan;
                     rsrcMan.clear();
                     rsrcMan.registerUri(info.value.uris);
                 } else {
-                    info.node.component.setOption(fieldPath, info.value);
+                    try {
+                        info.node.component.setOption(fieldPath, info.value);
+                    } catch(err) {
+                        info.field.addMessage(err.message);
+                        info.field.renderMessages();
+                    }
                 }
             }
 

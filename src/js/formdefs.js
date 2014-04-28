@@ -96,22 +96,39 @@
                 enum: _.keys(Webvs.SuperScope.DrawModes)
             },
             {
-                type: "IntegerField",
+                type: "NumberField",
                 label: "Thickness",
                 key: "thickness",
-                spinner: true
+                integer: true,
+                spinner: {
+                    min: 1
+                }
             },
             {
-                type: "IntegerField",
+                type: "NumberField",
                 label: "Clone",
                 key: "clone",
-                spinner: true
+                integer: true,
+                spinner: {
+                    min: 1
+                }
+            },
+            {
+                type: "NumberField",
+                label: "Color Cycle Speed",
+                key: "cycleSpeed",
+                spinner: {
+                    min: 0,
+                    max: 1,
+                    step: 0.01
+                }
             },
             {
                 type: "ObjectField",
                 title: "Code",
                 collapsible: true,
                 collapsed: true,
+                noTrigger: true,
                 key: "code",
                 fields: [
                     {
