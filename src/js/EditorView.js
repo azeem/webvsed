@@ -299,7 +299,7 @@
             var newParent, pos;
             if(moveInfo.position == "inside") {
                 newParent = targetNode.component;
-                pos = null;
+                pos = 0;
             } else {
                 newParent = targetNode.component.parent;
                 pos = targetNode.parent.children.indexOf(targetNode);

@@ -67,6 +67,33 @@
         ]
     };
 
+    FormDefs.ClearScreen = {
+        type: "ObjectField",
+        noTrigger: true,
+        fields: [
+            {
+                type: "ColorField",
+                key: "color",
+                label: "Clear Color",
+            },
+            {
+                type: "EnumField",
+                label: "Blend Mode",
+                key: "blendMode",
+                enum: _.keys(Webvs.BlendModes)
+            },
+            {
+                type: "NumberField",
+                label: "Beat Count",
+                key: "beatCount",
+                integer: true,
+                spinner: {
+                    min: 0
+                }
+            }
+        ]
+    };
+
     FormDefs.SuperScope = {
         type: "ObjectField",
         noTrigger: true,
