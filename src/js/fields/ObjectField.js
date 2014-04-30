@@ -43,6 +43,15 @@
             }
         },
 
+        remove: function() {
+            for(var key in fields) {
+                this.fields[key].remove();
+            }
+            WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
+        },
+
+        // event handlers
+
         handleChange: function(event, field, fieldValue) {
             if(!_.contains(this.fields, field)) {
                 return;

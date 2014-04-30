@@ -112,6 +112,14 @@
             return _.object(value);
         },
 
+        remove: function() {
+            for(var i = 0;i < this.fields.length;i++) {
+                this.fields[i].keyField.remove();
+                this.fields[i].valField.remove();
+            }
+            WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
+        },
+
         // event handlers
         handleAddItem: function() {
             var entry = this.addItem();

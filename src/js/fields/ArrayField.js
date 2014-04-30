@@ -80,6 +80,15 @@
             return rawValue;
         },
 
+        remove: function() {
+            for(var i = 0;i < this.fields.length;i++) {
+                this.fields[i].remove();
+            }
+            WebvsEd.ContainerField.prototype.remove.call(this, arguments);
+        },
+
+        //events
+
         handleAddItem: function() {
             var field = this.addItem();
             var value = field.getValue();

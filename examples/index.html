@@ -36,7 +36,8 @@
 
     var webvsMain = new Webvs.Main({
         canvas: $("#canvas canvas").get(0),
-        analyser: analyser
+        analyser: analyser,
+        resourcePrefix: "../bower_components/webvs/resources/"
     });
     webvsMain.start();
     webvsMain.loadPreset({
