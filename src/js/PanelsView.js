@@ -66,6 +66,7 @@
             this.panelInfo = {};
             this.panelOrder = [];
             this.webvsMain = opts.webvsMain;
+            this.rsrcEnumModel = opts.rsrcEnumModel;
         },
 
         render: function() {
@@ -175,18 +176,22 @@
                 this.tabs.append(panel);
 
                 var componentClass = node.component.constructor.Meta.name;
-                var form;
+                var formDef;
                 var isDefaultForm = false;
                 var isRootForm = false;
                 if(node.component.id == "root") {
-                    form = WebvsEd.makeField(WebvsEd.FormDefs.Main);
+                    formDef = WebvsEd.FormDefs.Main;
                     isRootForm = true;
                 } else if(componentClass in WebvsEd.FormDefs) {
-                    form = WebvsEd.makeField(WebvsEd.FormDefs[componentClass]);
+                    formDef = WebvsEd.FormDefs[componentClass];
                 } else {
-                    form = WebvsEd.makeField(WebvsEd.FormDefs.Default);
+                    formDef = WebvsEd.FormDefs.Default;
                     isDefaultForm = true;
                 }
+                if(_.isFunction(formDef)) {
+                    formDef = formDef(this.rsrcEnumModel);
+                } 
+                var form = WebvsEd.makeField(formDef);
                 panel.find(".body").append(form.el);
 
                 this.panelInfo[node.id] = {

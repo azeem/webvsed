@@ -67,6 +67,37 @@
         ]
     };
 
+    FormDefs.Picture = function(rsrcEnumModel) {
+        return {
+            type: "ObjectField",
+            noTrigger: true,
+            fields: [
+                {
+                    type: "EnumField",
+                    enum: rsrcEnumModel,
+                    label: "Image",
+                    key: "src"
+                },
+                {
+                    type: "NumberField",
+                    label: "X Position",
+                    key: "x",
+                    spinner: {
+                        step: 0.01
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "Y Position",
+                    key: "y",
+                    spinner: {
+                        step: 0.01
+                    }
+                }
+            ]
+        };
+    };
+
     FormDefs.ClearScreen = {
         type: "ObjectField",
         noTrigger: true,

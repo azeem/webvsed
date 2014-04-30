@@ -77,6 +77,7 @@
             this.width = opts.width || 700;
             this.height = opts.height || 500;
             this.webvsMain = opts.webvsMain;
+            this.rsrcEnumModel = new Backbone.Model(this.getRsrcEnumModelData());
             this.idCounter = 0;
         },
 
@@ -130,7 +131,10 @@
             });
 
             // build panels
-            this.panels = new WebvsEd.PanelsView({webvsMain: this.webvsMain});
+            this.panels = new WebvsEd.PanelsView({
+                webvsMain: this.webvsMain,
+                rsrcEnumModel: this.rsrcEnumModel
+            });
             this.$(".row2").prepend(this.panels.el);
             this.panels.render();
 
@@ -311,6 +315,12 @@
             newParent.addComponent(component, pos);
         },
 
+        getRsrcEnumModelData: function() {
+            var rsrcMan = this.webvsMain.rsrcMan;
+            var rsrcUris = rsrcMan.getAllUris();
+            return {values: _.keys(rsrcUris)};
+        },
+
         // event handlers
         
         handleTreeCtxtMenu: function(event) {
@@ -479,6 +489,7 @@
                     var rsrcMan = this.webvsMain.rsrcMan;
                     rsrcMan.clear();
                     rsrcMan.registerUri(info.value.uris);
+                    this.rsrcEnumModel.set(this.getRsrcEnumModelData());
                 } else {
                     try {
                         info.node.component.setOption(fieldPath, info.value);
