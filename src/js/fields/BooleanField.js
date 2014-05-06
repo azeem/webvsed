@@ -42,8 +42,7 @@
         },
 
         handleChange: function() {
-            this.value = this.$closest(".input").prop("checked");
-            this.cleanAndTrigger();
+            this.cleanAndTrigger(this.$closest(".input").prop("checked"));
         }
     });
 

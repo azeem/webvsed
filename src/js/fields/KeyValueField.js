@@ -33,11 +33,7 @@
 
         initialize: function(opts) {
             this.valFieldOpts = opts.valueField;
-            var keyFieldOpts = _.clone(opts.keyField);
-            keyFieldOpts.validators = keyFieldOpts.validators || [];
-            keyFieldOpts.validators.push(_.bind(this.uniqueKeyValidator, this));
-            keyFieldOpts.required = true;
-            this.keyFieldOpts = keyFieldOpts;
+            this.keyFieldOpts = opts.keyField;
 
             this.fields = [];
             WebvsEd.ContainerField.prototype.initialize.apply(this, arguments);
@@ -87,8 +83,14 @@
         },
 
         addItem: function(key, value) {
-            var keyField = WebvsEd.makeField(this.keyFieldOpts, this);
-            var valField = WebvsEd.makeField(this.valFieldOpts, this);
+            var keyValidators = this.keyFieldOpts.validators || [];
+            keyValidators.push(_.bind(this.uniqueKeyValidator, this));
+            var keyField = WebvsEd.makeField(this.keyFieldOpts, {
+                parent: this,
+                required: true,
+                validators: keyValidators,
+            });
+            var valField = WebvsEd.makeField(this.valFieldOpts, {parent: this});
             var itemHtml = $(this.itemTemplate());
             this.$closest(".keyvalItems").append(itemHtml);
             itemHtml.find(".itemBody").append(keyField.el).append(valField.el);
@@ -120,43 +122,39 @@
             WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
         },
 
+        rebuildValue: function() {
+            var value = {};
+            for(var i = 0;i < this.fields.length;i++) {
+                var field = this.fields[i];
+                value[field.keyField.getValue()] = field.valField.getValue();
+            }
+            this.cleanAndTrigger(value);
+        },
+
         // event handlers
         handleAddItem: function() {
             var entry = this.addItem();
             entry.keyField.$el.addClass("key");
-            var key = entry.keyField.getValue();
-            var value = entry.valField.getValue();
-            if(_.isNull(this.value)) {
-                this.value = [[key, value]];
-            } else {
-                this.value.push([key, value]);
-            }
             if(entry.keyField.valid && entry.valField.valid) {
-                this.cleanAndTrigger();
+                this.rebuildValue();
             }
         },
 
         handleRemoveItem: function(event) {
             var itemHtml = $(event.target).closest(".keyvalItem");
             var index = itemHtml.index();
-            this.value.splice(index, 1);
             var field = this.fields.splice(index, 1)[0];
             field.keyField.remove();
             field.valField.remove();
             itemHtml.remove();
-            this.cleanAndTrigger();
+            this.rebuildValue();
         },
 
         handleChange: function(event, field, value) {
             var target = $(event.target);
             var index = target.closest(".keyvalItem").index();
-            if(target.hasClass("key")) {
-                this.value[index][0] = value;
-            } else {
-                this.value[index][1] = value;
-            }
             if(this.fields[index].keyField.valid && this.fields[index].valField.valid) {
-                this.cleanAndTrigger();
+                this.rebuildValue();
             }
         }
 

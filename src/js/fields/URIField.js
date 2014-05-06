@@ -119,8 +119,7 @@
         },
 
         handleTextChange: function() {
-            this.value = this.$(".text").val();
-            this.cleanAndTrigger();
+            this.cleanAndTrigger(this.$(".text").val());
             this.setPreview();
             this.setDataPlaceHolder();
         },
@@ -130,8 +129,7 @@
             var reader = new FileReader();
             reader.onload = _.bind(function(event) {
                 this.isData = true;
-                this.value = event.target.result;
-                this.cleanAndTrigger();
+                this.cleanAndTrigger(event.target.result);
                 this.setPreview();
                 this.setDataPlaceHolder();
             }, this);

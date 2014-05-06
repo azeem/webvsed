@@ -44,7 +44,8 @@
         },
 
         addItem: function(value) {
-            var field = WebvsEd.makeField(this.arrayItemOpts, this);
+            var key = this.fields.length;
+            var field = WebvsEd.makeField(this.arrayItemOpts, {parent: this, key: key});
             var item = $(this.itemTemplate());
             this.$closest(".arrayItems").append(item);
             item.find(".itemBody").append(field.el);
@@ -87,35 +88,41 @@
             WebvsEd.ContainerField.prototype.remove.call(this, arguments);
         },
 
+        rebuildValue: function() {
+            var value = [];
+            for(var i = 0;i < this.fields.length;i++) {
+                value.push(this.fields[i].getValue());
+            }
+            this.cleanAndTrigger(value);
+        },
+
+        resetKeys: function() {
+            for(var i = 0;i < this.fields.length;i++) {
+                this.fields[i].setKey(i);
+            }
+        },
+
         //events
 
         handleAddItem: function() {
             var field = this.addItem();
-            var value = field.getValue();
-            if(_.isNull(this.value)) {
-                this.value = [value];
-            } else {
-                this.value.push(value);
-            }
             if(field.valid) {
-                this.cleanAndTrigger();
+                this.rebuildValue();
             }
         },
 
         handleRemoveItem: function(event) {
             var item = $(event.target).closest(".arrayItem");
             var index = item.index();
-            this.value.splice(index, 1);
             var field = this.fields.splice(index, 1)[0];
             field.remove();
             item.remove();
-            this.cleanAndTrigger();
+            this.resetKeys();
+            this.rebuildValue();
         },
 
-        handleChange: function(event, field, itemValue) {
-            var index = $(event.target).closest(".arrayItem").index();
-            this.value[index] = itemValue;
-            this.cleanAndTrigger();
+        handleChange: function() {
+            this.rebuildValue();
         },
 
         handleSortStart: function(event, ui) {
@@ -124,16 +131,13 @@
 
         handleSortStop: function(event, ui) {
             var sortStopIndex = ui.item.index();
-            var itemValue = this.value[this.sortStartIndex];
             var field = this.fields[this.sortStartIndex];
-
-            this.value.splice(this.sortStartIndex, 1);
-            this.value.splice(sortStopIndex, 0, itemValue);
 
             this.fields.splice(this.sortStartIndex, 1);
             this.fields.splice(sortStopIndex, 0, field);
 
-            this.cleanAndTrigger();
+            this.resetKeys();
+            this.rebuildValue();
         }
     });
 

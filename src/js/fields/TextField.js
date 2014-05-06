@@ -36,8 +36,7 @@
         },
 
         handleChange: function() {
-            this.value = this.$closest(".input").val();
-            this.cleanAndTrigger();
+            this.cleanAndTrigger(this.$closest(".input").val());
         }
     });
 

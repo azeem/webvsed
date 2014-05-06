@@ -41,8 +41,7 @@
         },
 
         changeValue: function() {
-            this.value = this.$closest(".text").val();
-            this.cleanAndTrigger();
+            this.cleanAndTrigger(this.$closest(".text").val());
         },
 
         handleChange: function(event) {

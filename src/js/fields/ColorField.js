@@ -23,7 +23,7 @@
 
         validate: function(rawValue) {
             if(!this.colorPattern.test(rawValue)) {
-                return new WebvsEd.InvalidValue("Value should be a hex color value");
+                return new WebvsEd.InvalidValue(rawValue, "Value should be a hex color value");
             }
         },
 
@@ -49,8 +49,7 @@
 
         // events
         handleChange: function(event, color) {
-            this.value = color.toHexString();
-            this.cleanAndTrigger();
+            this.cleanAndTrigger(color.toHexString());
         },
 
         handleLabelClick: function() {

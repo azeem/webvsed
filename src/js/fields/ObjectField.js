@@ -23,8 +23,7 @@
             this.fieldBody.append(this.objectTemplate());
 
             for(var i = 0;i < this.fieldOpts.length;i++) {
-                var field = WebvsEd.makeField(this.fieldOpts[i], this);
-                field.setParent(this);
+                var field = WebvsEd.makeField(this.fieldOpts[i], {parent: this});
                 this.fields[field.key] = field;
                 this.$closest(".objectItems").append(field.el);
             }
@@ -50,23 +49,22 @@
             WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
         },
 
+        rebuildValue: function() {
+            var value = {};
+            for(var key in this.fields) {
+                var field = this.fields[key];
+                value[key] = field.getValue();
+            }
+            this.cleanAndTrigger(value);
+        },
+
         // event handlers
 
         handleChange: function(event, field, fieldValue) {
             if(!_.contains(this.fields, field)) {
                 return;
             }
-            if(_.isNull(this.value)) {
-                this.value = {}; 
-                // TODO: not sure if this is sane behavior
-                // fill in values from all fields
-                // so that default values get populated
-                for(var key in this.fields) {
-                    this.value[key] = this.fields[key].getValue();
-                }
-            }
-            this.value[field.key] = fieldValue;
-            this.cleanAndTrigger();
+            this.rebuildValue();
         }
     });
 

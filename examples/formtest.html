@@ -9,6 +9,8 @@
 </head>
 <body>
 
+  <button id="model-change">Change Model</button>
+
   <div id="container" style="width: 500px"></div>
 
   <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
@@ -22,6 +24,8 @@
   <script type="text/javascript" src="../build/webvsed.js"></script>
 
   <script type="text/javascript">
+    var myModel = new Backbone.Model();
+    myModel.set("color", "#FF00FF");
     var field = WebvsEd.makeField({
         type: "ObjectField",
         title: "My Glorious Object",
@@ -29,28 +33,34 @@
         fields: [
             {
                 key: "color",
+                model: myModel,
                 type: "ColorField",
-                label: "color"
+                label: "color",
+                default: "#FFFFFF",
             },
             {
                 key: "uri",
+                model: myModel,
                 type: "URIField",
                 title: "URI"
             },
             {
                 key: "frameCount",
+                model: myModel,
                 type: "NumberField",
                 label: "integer item",
                 default: 123,
             },
             {
                 key: "compatMode",
+                model: myModel,
                 type: "BooleanField",
                 label: "Check me",
                 default: true
             },
             {
                 key: "values",
+                model: myModel,
                 type: "ArrayField",
                 title: "Values",
                 arrayItem: {
@@ -63,12 +73,13 @@
             },
             {
                 key: "pairs",
+                model: myModel,
                 title: "Key Val",
                 collapsible: true,
                 type: "KeyValueField",
                 keyField: {
                     type: "TextField",
-                    label: "Key"
+                    label: "Key",
                 },
                 valueField: {
                     type: "EnumField",
@@ -79,6 +90,7 @@
             },
             {
                 key: "text",
+                model: myModel,
                 keyupChange: true,
                 debounceWait: 1000,
                 type: "JSONField",
@@ -88,8 +100,12 @@
     });
     $("#container").append(field.el);
 
-    $("#container").on("valueChange", function(event, field, value) {
-        console.log(value);
+    $("#model-change").click(function() {
+        myModel.set("color", "#00FFFF");
+    });
+    myModel.on("change", function() {
+        console.log("model change");
+        console.dir(arguments);
     });
   </script>
 

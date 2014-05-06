@@ -94,8 +94,7 @@
         // event handlers
 
         handleChange: function(event) {
-            this.value = $(event.target).val();
-            this.cleanAndTrigger();
+            this.cleanAndTrigger($(event.target).val());
         },
 
         handleEnumChange: function() {

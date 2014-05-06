@@ -29,13 +29,14 @@
      * @returns {WebvsEd.Field} - instantiated field
      * @memberof WebvsEd
      */
-    WebvsEd.makeField = function(opts, parent) {
+    WebvsEd.makeField = function(opts, overrideOpts) {
         var fieldClass = WebvsEd[opts.type];
         if(!fieldClass) {
             throw new Error("Unknown field class " + opts.type);
         }
+        opts = _.clone(opts);
+        _.extend(opts, overrideOpts);
         var field = new fieldClass(opts);
-        field.setParent(parent);
         return field;
     };
 
@@ -64,36 +65,38 @@
         ].join("")),
 
         initialize: function(opts) {
-            WebvsEd.Field.fieldIdCounter = WebvsEd.Field.fieldIdCounter || 0;
-            this.fid = this.fieldName + WebvsEd.Field.fieldIdCounter++;
-
-            this.key = opts.key;
-            if(!this.key) {
-                this.key = this.fid;
-            }
-
-            this.title = opts.title;
-
-            this.noTrigger = opts.noTrigger?true:false;
-
-            if(_.isUndefined(opts.required)) {
-                this.required = true;
-            } else {
-                this.required = opts.required?true:false;
-            }
-
+            // set options
+            this.title        = opts.title;
+            this.noTrigger    = opts.noTrigger?true:false;
+            this.model        = opts.model;
+            this.required     = _.isUndefined(opts.required)?true:opts.required;
+            this.defaultValue = opts.default;
+            this.parent       = opts.parent;
             this.validators = opts.validators || [];
             if(!_.isArray(this.validators)) {
                 this.validators = [this.validators];
             }
-            this.defaultValue = opts.default;
 
+            // init properties
+            this.fid = _.uniqueId(this.fieldName);
             this.value = null;
             this.valid = true;
             this.messages = [];
 
+            this.setKey(opts.key);
             this.render();
-            this.setValue(this.defaultValue || null);
+
+            // set the initial value from model or
+            // defaultValue
+            var modelValue = this.model && this.model.get(this.key);
+            if(!this.isEmpty(modelValue)) {
+                this.setValue(modelValue);
+            } else if(!this.isEmpty(this.defaultValue)) {
+                this.setValue(this.defaultValue);
+                this.setModelValue();
+            } else {
+                this.setValue(null);
+            }
         },
 
         render: function() {
@@ -114,7 +117,7 @@
             return rawValue;
         },
 
-        clean: function() {
+        clean: function(noParse) {
             this.valid = false;
             this.messages = [];
 
@@ -130,12 +133,14 @@
             }
 
             // parse the value into javascript object
-            var parsedValue = this.parseValue(this.value);
-            if(parsedValue instanceof WebvsEd.InvalidValue) {
-                this.addMessage(parsedValue.message);
-                return;
+            if(!noParse) {
+                var parsedValue = this.parseValue(this.value);
+                if(parsedValue instanceof WebvsEd.InvalidValue) {
+                    this.addMessage(parsedValue.message);
+                    return;
+                }
+                this.value = parsedValue; // set to parsed value
             }
-            this.value = parsedValue; // set to parsed value
 
             var validation;
 
@@ -172,6 +177,14 @@
             this.valid = true;
         },
 
+        setKey: function(key) {
+            this.key = key;
+            if(this.model) {
+                this.stopListening(this.model);
+                this.listenTo(this.model, "change:" + this.key, this.handleModelChange);
+            }
+        },
+
         isEmpty: function(value) {
             return (_.isNull(value) || _.isUndefined(value));
         },
@@ -193,6 +206,12 @@
             }
         },
 
+        setModelValue: function() {
+            if(this.valid && this.model) {
+                this.model.set(this.key, this.getValue(), {fid: this.fid});
+            }
+        },
+
         setValue: function(value) {
             this.value = value;
             this.clean();
@@ -204,9 +223,11 @@
             return this.value;
         },
 
-        cleanAndTrigger: function() {
+        cleanAndTrigger: function(value) {
+            this.value = value;
             this.clean();
             this.renderMessages();
+            this.setModelValue();
             if(this.valid && !this.noTrigger) {
                 this.$el.trigger("valueChange", [this, this.getValue()]);
             }
@@ -216,21 +237,29 @@
             return this.$el.closestDescendant(selector);
         },
 
-        setParent: function(parent) {
-            this.parent = parent;
-        },
-
-        getPath: function() {
-            var prefix = "";
-            if(this.parent) {
-                prefix = this.parent.getPath() + ".";
-            }
-            return (prefix + this.key);
-        },
-
         className: function() {
             return WebvsEd.getClass("field", this.fieldName.toLowerCase());
+        },
+
+        // event handlers
+
+        handleModelChange: function(model, value, options) {
+            if(options.fid == this.fid) {
+                // dont handle if event was raised
+                // by this field itself
+                return;
+            }
+            this.value = value;
+            this.clean(true);
+            this.renderValue();
+            this.renderMessages();
+            if(this.valid) {
+                if(!this.noTrigger) {
+                    this.$el.trigger("valueChange", [this, this.getValue()]);
+                }
+            }
         }
+
     });
 
 })(jQuery, _, Backbone);
