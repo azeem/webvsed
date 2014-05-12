@@ -19,6 +19,12 @@
             if("max" in opts && value > opts.max) {
                 return new WebvsEd.InvalidValue(value, "Value should be less than or equal to " + opts.max);
             }
+        },
+        "regex": function(opts, value) {
+            if(!opts.regex.test(value)) {
+                var message = opts.message || ("Value should match " + opts.regex);
+                reurn new WebvsEd.InvalidValue(value, message);
+            }
         }
     };
 
