@@ -18,7 +18,7 @@
         ),
 
         panelTemplate: _.template([
-            "<div data-webvsed-panel-id='<%= id %>' class='panel' id='webvsed-panel<%= id %>'>",
+            "<div data-webvsed-panel-id='<%= id %>' class='panel' id='webvsed-panel-<%= id %>'>",
             "</div>"
         ].join("")),
 
@@ -50,7 +50,7 @@
         render: function() {
             this.$el.append(this.template());
 
-            this.tabs = this.$el.children(".tabs");
+            this.tabs = this.$(".tabs");
             this.tabs.tabs({
                 heightStyle: "fill"
             });
@@ -123,7 +123,7 @@
                 panelInfo.tab.remove();
                 panelInfo.tab = null;
                 panelInfo.panel.dialog({
-                    title: panelInfo.node.name,
+                    title: panelInfo.title,
                     appendTo: this.el,
                     width: 500,
                     height: 500
@@ -164,6 +164,7 @@
         updateTitle: function(id, title) {
             var panelInfo = this.panelInfo[id];
             if(panelInfo) {
+                panelInfo.title = title;
                 if(panelInfo.tab) {
                     panelInfo.tab.children().text(title);
                 } else {
@@ -178,7 +179,7 @@
 
         getPanel: function(id) {
             return this.panelInfo[id];
-        }
+        },
 
         // event handlers
         

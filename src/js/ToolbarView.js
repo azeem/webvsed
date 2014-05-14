@@ -1,7 +1,7 @@
 (function($, _, Backbone) {
 
     WebvsEd.ToolbarView = Backbone.View.extend({
-        className: Webved.getClass("toolbar"),
+        className: WebvsEd.getClass("toolbar"),
 
         template: _.template([
             "<div class='buttonset'>",
@@ -16,7 +16,8 @@
             "click .insert" : "handleToolbarInsert",
             "click .remove" : "handleToolbarRemove",
             "click .close"  : "handleToolbarClose",
-            "click .pop"    : "handleToolbarPop"
+            "click .pop"    : "handleToolbarPop",
+            "click .component-add": "handleMenuAdd",
         },
 
         initialize: function(opts) {
@@ -27,6 +28,7 @@
             this.$el.append(this.template());
             this.addMenu = $(WebvsEd.buildAddComponentMenu());
             this.$el.append(this.addMenu);
+            this.addMenu.menu().hide().css("position", "absolute");
 
             // Build Toolbar buttons
             this.$("button").each(function() {
@@ -78,10 +80,18 @@
             this.tabsView.togglePopPanel(panelId);
         },
 
-        handleToolbarAdd: function(event) {
-            var node = this.panels.getCurrentPanel().node;
-            this.addNewComponent($(event.target).data("webvsedComponentName"), node);
-            event.preventDefault();
+        handleMenuAdd: function(event) {
+            var panelInfo = this.tabsView.getCurrentPanel();
+            var component;
+            if(panelInfo.panelView instanceof WebvsEd.MainPanelView) {
+                component = panelInfo.panelView.main.rootComponent;
+            } else if(panelInfo.panelView instanceof WebvsEd.ComponentPanelView) {
+                component = panelInfo.panelView.component;
+            } else {
+                return;
+            }
+            var componentName = $(event.target).data("webvsedComponentName");
+            WebvsEd.addComponentBeforeOrInside(component, componentName);
         },
 
         handlePanelActivate: function(panelInfo) {
@@ -91,7 +101,7 @@
                 this.$(".remove,.close,.pop").button("option", "disabled", true);
             }
             var popButtonOptions;
-            if(panel.tab) {
+            if(panelInfo.tab) {
                 popButtonOptions = {icons:{primary: "ui-icon-arrowthick-1-ne"}, label:"Pop Out"};
             } else {
                 popButtonOptions = {icons:{primary: "ui-icon-arrowthick-1-sw"}, label:"Pop In"};

@@ -3,13 +3,14 @@
     var MainForm = function(main) {
         return {
             type: "ObjectField",
-            noTrigger: true,
             fields: [
                 {
                     type: "ObjectField",
                     key: "meta",
                     title: "Meta",
                     model: main,
+                    collapsible: true,
+                    collapsed: true,
                     fields: [
                         {
                             type: "TextField",
@@ -67,7 +68,7 @@
 
         render: function() {
             this.mainForm = WebvsEd.makeField(MainForm(this.main));
-            this.$el.append(mainForm.el);
+            this.$el.append(this.mainForm.el);
         }
     });
 

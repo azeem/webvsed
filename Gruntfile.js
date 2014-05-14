@@ -2,6 +2,7 @@ module.exports = function(grunt) {
     var jsFiles = [
         "src/js/Base.js",
         "src/js/fields/Field.js",
+        "src/js/fields/DotKeyMixin.js",
         "src/js/fields/URIField.js",
         "src/js/fields/ColorField.js",
         "src/js/fields/TextField.js",
@@ -15,8 +16,12 @@ module.exports = function(grunt) {
         "src/js/fields/KeyValueField.js",
         "src/js/fields/ObjectField.js",
         "src/js/FormDefs.js",
-        "src/js/PanelsView.js",
-        "src/js/EditorView.js"
+        "src/js/SidebarView.js",
+        "src/js/TabsView.js",
+        "src/js/ToolbarView.js",
+        "src/js/EditorView.js",
+        "src/js/ComponentPanelView.js",
+        "src/js/MainPanelView.js"
     ];
 
     var lessFiles = [

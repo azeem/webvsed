@@ -43,7 +43,7 @@
         },
 
         remove: function() {
-            for(var key in fields) {
+            for(var key in this.fields) {
                 this.fields[key].remove();
             }
             WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
@@ -67,5 +67,7 @@
             this.rebuildValue();
         }
     });
+
+    _.extend(WebvsEd.ObjectField.prototype, WebvsEd.DotKeyMixin(WebvsEd.ContainerField));
 
 })(jQuery, _, Backbone);

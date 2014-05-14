@@ -47,7 +47,6 @@
 
         // events
         handleSpinStop: function() {
-            console.log("here");
             this.$closest(".input").change();
         }
     });

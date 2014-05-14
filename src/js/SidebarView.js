@@ -4,7 +4,9 @@
         className: WebvsEd.getClass("sidebar"),
 
         template: _.template([
-            "<div class='tree'></div>"
+            "<div class='resize-container'>",
+            "    <div class='tree'></div>",
+            "</div>",
         ].join("")),
 
         ctxtMenuTemplate: _.template([
@@ -21,7 +23,7 @@
             "tree.contextmenu .tree": "handleCtxtMenu",
             "tree.select .tree": "handleTreeSelect",
             "tree.move .tree": "handleTreeMove",
-            "resize": "handleResize",
+            "resize .resize-container": "handleResize",
 
             "click > .treectxtmenu .component-add": "handleMenuAdd",
             "click > .treectxtmenu .remove": "handleMenuRemove",
@@ -32,10 +34,13 @@
 
         initialize: function(opts) {
             this.main = opts.main;
+            this.tabsView = opts.tabsView;
         },
 
         render: function() {
-            this.$el.resizable({
+            this.$el.append(this.template());
+
+            this.$(".resize-container").resizable({
                 handles: "e"
             });
 
@@ -52,8 +57,15 @@
                 dragAndDrop: true,
                 onCanMove: _.bind(this.handleTreeCanMove, this),
                 onCanMoveTo: _.bind(this.handleTreeCanMoveTo, this),
-                data:[this.buildTree(this.main.rootComponent)]
+                data:[this.buildTree()]
             });
+
+            this.listenTo(this.tabsView, "panelActivate", this.handlePanelActivate);
+
+            // hide menu on click anywhere
+            $("body").on("click", _.bind(function() {
+                this.ctxtMenu.hide();
+            }, this));
         },
 
         buildNode: function(component) {
@@ -70,10 +82,15 @@
         },
         
         buildTree: function(component) {
+            if(!component) {
+                component = this.main.rootComponent;
+            }
+
+            this.addListeners(component);
+
             var label;
-            var node = buildNode(component);
+            var node = this.buildNode(component);
             if(component instanceof Webvs.Container) {
-                this.addContainerListeners(component);
                 node.children = [];
                 for(var i = 0;i < component.components.length;i++) {
                     node.children.push(this.buildTree(component.components[i]));
@@ -84,44 +101,56 @@
 
         findNode: function(componentId, root) {
             if(!root) {
-                root = this.tree.getTree();
+                root = this.getRootNode();
             }
             if(root.component.id == componentId) {
                 return root;
             }
             for(var i = 0;i < root.children.length;i++) {
                 var result;
-                if(result = this.findNode(componentId, root.children[i])) {
+                if((result = this.findNode(componentId, root.children[i]))) {
                     return result;
                 }
             }
         },
 
-        addContainerListeners: function(container) {
-            this.listenTo(container, "addComponent", this.handleAddComponent);
-            this.listenTo(container, "removeComponent", this.handleRemoveComponent);
+        getRootNode: function() {
+            return this.tree.tree("getTree").children[0];
         },
 
-        selectNode: function(nodeId) {
-            var node = this.tree.tree("getNodeById", nodeId);
-            this.tree.tree("selectNode", node);
+        addListeners: function(component) {
+            this.listenTo(component, "change:id", this.handleIdChange);
+            if(component instanceof Webvs.Container) {
+                this.listenTo(component, "addComponent", this.handleAddComponent);
+                this.listenTo(component, "detachComponent", this.handleDetachComponent);
+            }
+        },
+
+        createAndOpenPanel: function(node) {
+            var panelInfo = this.tabsView.getPanel(node.id);
+            if(!panelInfo) {
+                // create panel if not already open
+                var panelView = new WebvsEd.ComponentPanelView({component: node.component});
+                panelInfo = this.tabsView.createPanel(node.id, node.name, panelView);
+                panelView.render();
+            }
+            this.tabsView.activatePanel(node.id);
         },
 
         // event handlers
 
         handleAddComponent: function(component, parent, opts) {
-            if(component instanceof Webvs.Container) {
-                this.addContainerListeners(component);
-            }
+            this.addListeners(component);
             var parentNode = this.findNode(parent.id);
             if(opts.pos == parentNode.children.length) {
                 this.tree.tree("appendNode", this.buildNode(component), parentNode);
             } else {
                 this.tree.tree("addNodeBefore", this.buildNode(component), parentNode.children[opts.pos]);
             }
+            this.createAndOpenPanel(this.findNode(component.id));
         },
 
-        handleRemoveComponent: function(component, parent, opts) {
+        handleDetachComponent: function(component, parent, opts) {
             this.stopListening(component);
             var node = this.findNode(component.id);
             this.tree.tree("removeNode", node);
@@ -129,18 +158,23 @@
 
         handleCtxtMenu: function(event) {
             this.ctxtMenuNode = event.node;
-            if(event.node.component.enabled) {
+            this.ctxtMenu.find("li").show();
+
+            if(event.node.id == this.getRootNode().id) {
+                this.ctxtMenu.find(".set-id").hide();
+                this.ctxtMenu.find(".remove").hide();
                 this.ctxtMenu.find(".enable").hide();
-                this.ctxtMenu.find(".disable").show();
+                this.ctxtMenu.find(".disable").hide();
+            } else if(event.node.component.enabled) {
+                this.ctxtMenu.find(".enable").hide();
             } else {
-                this.ctxtMenu.find(".enable").show();
                 this.ctxtMenu.find(".disable").hide();
             }
             this.ctxtMenu.css({left: event.click_event.pageX, top: event.click_event.pageY}).show();
         },
 
         handleTreeSelect: function(event) {
-            this.trigger("treeSelect", event.node);
+            this.createAndOpenPanel(event.node);
         },
 
         handleTreeMove: function(event) {
@@ -162,20 +196,10 @@
             newParent.addComponent(component, pos);
         },
 
-        handleMenuAdd: function() {
+        handleMenuAdd: function(event) {
             var componentName = $(event.target).data("webvsedComponentName");
             var node = this.ctxtMenuNode;
-            var parentComponent, pos, treeMethod;
-            if(node.component instanceof Webvs.Container) {
-                parentComponent = node.component;
-                pos = null;
-                treeMethod = "appendNode";
-            } else {
-                parentComponent = node.component.parent;
-                pos = node.parent.children.indexOf(node);
-                treeMethod = "addNodeBefore";
-            }
-            parentComponent.addComponent({type: componentName}, pos);
+            WebvsEd.addComponentBeforeOrInside(node.component, componentName);
         },
 
         handleMenuRemove: function() {
@@ -198,17 +222,47 @@
             var message = promptMsg;
             while(true) {
                 var newId = window.prompt(message);
-                try {
-                    node.component.setId("id", newId);
-                } catch(e) {
-                    message = e.message + "\n" + promptMsg;
+                if(_.isNull(newId)) {
+                    break;
                 }
+                if(node.component.set("id", newId)) {
+                    break;
+                }
+                message = node.component.lastError.message + "\n" + promptMsg;
             }
         },
 
         handleResize: function() {
             this.trigger("resize");
-        }
+        },
+
+        handleTreeCanMove: function(node) {
+            return (node.id != this.getRootNode().id);
+        },
+
+        handleTreeCanMoveTo: function(movedNode, targetNode, position) {
+            if(position == "inside") {
+                return (targetNode.component instanceof Webvs.Container);
+            } else {
+                return (targetNode.id != this.getRootNode().id);
+            }
+        },
+
+        handleIdChange: function(component, newId, options) {
+            var node = this.findNode(component.id);
+            this.tree.tree("updateNode", node, newId);
+            this.tabsView.updateTitle(node.id, node.name);
+        },
+
+        handlePanelActivate: function(panelInfo) {
+            if(!panelInfo.panelView instanceof WebvsEd.MainPanelView &&
+               !panelInfo.panelView instanceof WebvsEd.ComponentPanelView) {
+                return;
+            }
+            var node = this.tree.tree("getNodeById", panelInfo.id);
+            this.tree.tree("selectNode", node);
+        },
+
     });
 
 })(jQuery, _, Backbone);

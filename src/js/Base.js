@@ -43,6 +43,18 @@
                 "</ul>",
             ].join(""));
         }
+
+        WebvsEd.addComponentBeforeOrInside = function(component, componentName) {
+            var parentComponent, pos;
+            if(component instanceof Webvs.Container) {
+                parentComponent = component;
+                pos = null;
+            } else {
+                parentComponent = component.parent;
+                pos = parentComponent.components.indexOf(component);
+            }
+            parentComponent.addComponent({type: componentName}, pos);
+        };
         
         var findOrCreate = function(object, key) {
             if(_.isString(key)) {

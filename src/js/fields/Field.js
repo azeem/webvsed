@@ -23,7 +23,7 @@
         "regex": function(opts, value) {
             if(!opts.regex.test(value)) {
                 var message = opts.message || ("Value should match " + opts.regex);
-                reurn new WebvsEd.InvalidValue(value, message);
+                return new WebvsEd.InvalidValue(value, message);
             }
         }
     };
@@ -78,6 +78,7 @@
             this.required     = _.isUndefined(opts.required)?true:opts.required;
             this.defaultValue = opts.default;
             this.parent       = opts.parent;
+            this.reRender     = opts.reRender;
             this.validators = opts.validators || [];
             if(!_.isArray(this.validators)) {
                 this.validators = [this.validators];
@@ -94,7 +95,7 @@
 
             // set the initial value from model or
             // defaultValue
-            var modelValue = this.model && this.model.get(this.key);
+            var modelValue = this.getModelValue(this.key);
             if(!this.isEmpty(modelValue)) {
                 this.setValue(modelValue);
             } else if(!this.isEmpty(this.defaultValue)) {
@@ -218,6 +219,12 @@
             }
         },
 
+        getModelValue: function(key) {
+            if(this.model) {
+                return this.model.get(key);
+            }
+        },
+
         setValue: function(value) {
             this.value = value;
             this.clean();
@@ -250,7 +257,7 @@
         // event handlers
 
         handleModelChange: function(model, value, options) {
-            if(options.fid == this.fid) {
+            if(!this.reRender && options.fid == this.fid) {
                 // dont handle if event was raised
                 // by this field itself
                 return;
