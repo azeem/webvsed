@@ -12,6 +12,7 @@
 
         initialize: function(opts) {
             this.component = opts.component;
+            this.main = opts.main;
         },
 
         render: function() {
@@ -42,7 +43,7 @@
             } else {
                 formDef = WebvsEd.FormDefs.Default;
             }
-            this.componentForm = WebvsEd.makeField(formDef(this.component));
+            this.componentForm = WebvsEd.makeField(formDef(this.component, this.main));
             this.$(".body").append(this.componentForm.el);
         },
 

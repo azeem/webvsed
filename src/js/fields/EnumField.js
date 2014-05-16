@@ -9,7 +9,13 @@
             "<% } %>",
             "<select id='<%= fid %>' class='input'>",
             "<% _.each(enums, function(enumItem) { %>",
-            "    <option value='<%= enumItem.value %>'><%= enumItem.label %></option>",
+            "    <% if(enumItem.groupStart) { %>",
+            "        <optgroup label='<%= enumItem.label %>'>",
+            "    <% } else if(enumItem.groupEnd) { %>",
+            "        </optgroup>",
+            "    <% } else { %>",
+            "        <option value='<%= enumItem.value %>'><%= enumItem.label %></option>",
+            "    <% } %>",
             "<% }); %>",
             "</select>",
         ].join("")),
@@ -17,7 +23,11 @@
         radioTemplate: _.template([
             "<fieldset class='input'>",
             "<% _.each(enums, function(enumItem) { %>",
-            "    <label><input type='radio' name='<%= fid %>' value='<%= enumItem.value %>'/><%= enumItem.label %></label>",
+            "    <% if(enumItem.groupStart) { %>",
+            "        <h4><%= enumItem.label %></h4>",
+            "    <% } else if(!enumItem.groupEnd) { %>",
+            "        <label><input type='radio' name='<%= fid %>' value='<%= enumItem.value %>'/><%= enumItem.label %></label>",
+            "    <% } %>",
             "<% }); %>",
             "</fieldset>",
         ].join("")),
@@ -27,13 +37,13 @@
         }, WebvsEd.Field.prototype.events),
 
         initialize: function(opts) {
-            this.enum = opts.enum;
-            if(this.enum instanceof Backbone.Model) {
-                // listen for enumeration changes
-                this.listenTo(this.enum, 'change', this.handleEnumChange);
-            }
-
             this.enumLabels = opts.enumLabels || {};
+            if(WebvsEd.isEventLike(opts.enum)) {
+                this.enumModel = opts.enum;
+                this.enumKey = opts.enumKey;
+            }
+            this.buildEnum(opts.enum);
+
             this.label = opts.label;
             this.radio = opts.radio?true:false;
             WebvsEd.Field.prototype.initialize.apply(this, arguments);
@@ -42,14 +52,17 @@
         render: function() {
             WebvsEd.Field.prototype.render.apply(this, arguments);
             this.renderEnum();
+
+            if(this.enumModel) {
+                // listen for enumeration changes
+                this.listenTo(this.enumModel, 'change', this.handleEnumChange);
+            }
         },
 
         renderEnum: function() {
             var data = {
                 label: this.label,
-                enums: _.map(this.getEnumValues(), function(value) {
-                    return {value: value, label: this.enumLabels[value] || value};
-                }, this),
+                enums: this.enumRender,
                 fid: this.fid
             };
 
@@ -62,7 +75,7 @@
         },
 
         parseValue: function(rawValue) {
-            var values = this.getEnumValues();
+            var values = this.enumValues;
             var value = _.find(values, function(value) {
                 return (value == rawValue);
             });
@@ -78,17 +91,45 @@
                 this.$closest("input[type='radio']").prop("checked", false);
                 this.$closest("input[type='radio'][value='"+this.value+"']").prop("checked", true);
             } else {
-                var index = this.getEnumValues().indexOf(this.value);
+                var index = this.enumValues.indexOf(this.value);
                 this.$closest("select").prop("selectedIndex", index);
             }
         },
 
-        getEnumValues: function() {
-            if(_.isArray(this.enum)) {
-                return this.enum;
-            } else {
-                return this.enum.get("values");
+        buildEnum: function(enumSrc) {
+            if(WebvsEd.isEventLike(enumSrc)) {
+                if(_.isFunction(this.enumKey)) {
+                    enumSrc = this.enumKey(enumSrc);
+                } else {
+                    enumSrc = enumSrc.get(this.enumKey);
+                }
             }
+
+            var mapEnum = _.bind(function(value) {
+                if(!_.isObject(value)) {
+                    // simple value
+                    return {value: value, label: this.enumLabels[value] || value};
+                } else if("value" in value && "label" in value) {
+                    // value and label
+                    return value;
+                } else if("label" in value && "options" in value) {
+                    // group
+                    var enums = _.map(value.options, mapEnum);
+                    enums.unshift({groupStart: true, label: value.label});
+                    enums.push({groupEnd: true});
+                    return enums;
+                }
+            }, this);
+
+            this.enumRender = _.chain(enumSrc).map(mapEnum).flatten().uniq(false, function(item) {
+                return ("value" in item?item.value:item);
+            }).value();
+
+            this.enumValues = _.chain(this.enumRender).filter(function(item) {
+                return ("value" in item);
+            }).map(function(item) {
+                return item.value;
+            }).value();
         },
 
         // event handlers
@@ -98,10 +139,16 @@
         },
 
         handleEnumChange: function() {
-            if(this.getEnumValues().indexOf(this.value) == -1) {
+            this.buildEnum(this.enumModel);
+            if(this.enumValues.indexOf(this.value) == -1) {
                 // if current value is not in the new enum
                 // then set value to null
-                this.setValue(null);
+                var newValue = null;
+                if(!this.isEmpty(this.defaultValue)) {
+                    newValue = this.defaultValue;
+                }
+                this.setValue(newValue);
+                this.setModelValue();
             }
             this.renderEnum();
             this.renderValue();

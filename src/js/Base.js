@@ -25,6 +25,28 @@
         }).join(" "));
     };
 
+    WebvsEd.makeRsrcEnum = function(rsrMan) {
+        var uris = _.keys(rsrMan.get("uris"));
+        var packs = rsrMan.get("packs");
+        var enums = [];
+        if(uris.length > 0) {
+            enums.push({label: "Preset Resources", options: uris});
+        }
+        for(var i = 0;i < packs.length;i++) {
+            var pack = packs[i];
+            var label = pack.name || ("Pack " + i);
+            enums.push({label: label, options: pack.fileNames});
+        }
+        return enums;
+    };
+
+    WebvsEd.isEventLike = function(obj) {
+        return (
+            "on"  in obj && _.isFunction(obj.on) &&
+            "off" in obj && _.isFunction(obj.off)
+        );
+    };
+
     WebvsEd.buildAddComponentMenu = function(template) {
         if(!template) {
             template = _.template([

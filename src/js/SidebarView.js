@@ -130,7 +130,7 @@
             var panelInfo = this.tabsView.getPanel(node.id);
             if(!panelInfo) {
                 // create panel if not already open
-                var panelView = new WebvsEd.ComponentPanelView({component: node.component});
+                var panelView = new WebvsEd.ComponentPanelView({component: node.component, main:this.main});
                 panelInfo = this.tabsView.createPanel(node.id, node.name, panelView);
                 panelView.render();
             }
@@ -140,6 +140,9 @@
         // event handlers
 
         handleAddComponent: function(component, parent, opts) {
+            if(opts.isMove) {
+                return;
+            }
             this.addListeners(component);
             var parentNode = this.findNode(parent.id);
             if(opts.pos == parentNode.children.length) {
@@ -151,6 +154,9 @@
         },
 
         handleDetachComponent: function(component, parent, opts) {
+            if(opts.isMove) {
+                return;
+            }
             this.stopListening(component);
             var node = this.findNode(component.id);
             this.tree.tree("removeNode", node);
@@ -178,22 +184,22 @@
         },
 
         handleTreeMove: function(event) {
-            var component = event.moveInfo.moved_node.component;
-            var prevParent = event.moveInfo.previous_parent.component;
-            var targetNode = event.moveInfo.target_node;
+            var component = event.move_info.moved_node.component;
+            var prevParent = event.move_info.previous_parent.component;
+            var targetNode = event.move_info.target_node;
             var newParent, pos;
-            if(event.moveInfo.position == "inside") {
+            if(event.move_info.position == "inside") {
                 newParent = targetNode.component;
                 pos = 0;
             } else {
                 newParent = targetNode.component.parent;
                 pos = targetNode.parent.children.indexOf(targetNode);
-                if(event.moveInfo.position == "after") {
+                if(event.move_info.position == "after") {
                     pos++;
                 }
             }
-            prevParent.detachComponent(component.id);
-            newParent.addComponent(component, pos);
+            prevParent.detachComponent(component.id, {isMove: true});
+            newParent.addComponent(component, pos, {isMove: true});
         },
 
         handleMenuAdd: function(event) {

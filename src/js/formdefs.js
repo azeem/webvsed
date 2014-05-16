@@ -14,21 +14,24 @@
     };
 
 
-    FormDefs.Picture = function(rsrcEnumModel) {
+    FormDefs.Picture = function(component, main) {
         return {
             type: "ObjectField",
-            noTrigger: true,
             fields: [
                 {
                     type: "EnumField",
-                    enum: rsrcEnumModel,
+                    enum: main.rsrcMan,
+                    enumKey: WebvsEd.makeRsrcEnum,
+                    default: "avsres_texer_circle_edgeonly_19x19.bmp",
                     label: "Image",
-                    key: "src"
+                    key: "src",
+                    model: component
                 },
                 {
                     type: "NumberField",
                     label: "X Position",
                     key: "x",
+                    model: component,
                     spinner: {
                         step: 0.01
                     }
@@ -37,6 +40,7 @@
                     type: "NumberField",
                     label: "Y Position",
                     key: "y",
+                    model: component,
                     spinner: {
                         step: 0.01
                     }
@@ -45,37 +49,40 @@
         };
     };
 
-    FormDefs.ClearScreen = {
-        type: "ObjectField",
-        noTrigger: true,
-        fields: [
-            {
-                type: "ColorField",
-                key: "color",
-                label: "Clear Color",
-            },
-            {
-                type: "EnumField",
-                label: "Blend Mode",
-                key: "blendMode",
-                enum: _.keys(Webvs.BlendModes)
-            },
-            {
-                type: "NumberField",
-                label: "Beat Count",
-                key: "beatCount",
-                integer: true,
-                spinner: {
-                    min: 0
+    FormDefs.ClearScreen = function(component) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "ColorField",
+                    key: "color",
+                    model: component,
+                    label: "Clear Color",
+                },
+                {
+                    type: "EnumField",
+                    label: "Blend Mode",
+                    key: "blendMode",
+                    model: component,
+                    enum: _.keys(Webvs.BlendModes)
+                },
+                {
+                    type: "NumberField",
+                    label: "Beat Count",
+                    key: "beatCount",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 0
+                    }
                 }
-            }
-        ]
+            ]
+        };
     };
 
     FormDefs.SuperScope = function(component) {
         return {
             type: "ObjectField",
-            noTrigger: true,
             fields: [
                 {
                     type: "EnumField",
@@ -143,7 +150,6 @@
                     model: component,
                     collapsible: true,
                     collapsed: true,
-                    noChangeBubble: true,
                     arrayItem: {
                         type: "ColorField",
                         default: "#ffffff"
@@ -154,7 +160,6 @@
                     title: "Code",
                     collapsible: true,
                     collapsed: true,
-                    noTrigger: true,
                     key: "code",
                     model: component,
                     fields: [

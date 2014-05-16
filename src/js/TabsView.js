@@ -218,7 +218,7 @@
         },
 
         handleDialogClose: function(event) {
-            var id = $(event.target).data("webvsesPanelId");
+            var id = $(event.target).data("webvsedPanelId");
             this.closePanel(id);
         },
 
