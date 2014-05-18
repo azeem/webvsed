@@ -7,10 +7,6 @@
             "<div class='objectItems'></div>"
         ].join("")),
 
-        events: _.extend({
-            "valueChange .objectItems": "handleChange",
-        }, WebvsEd.ContainerField.prototype.events),
-
         initialize: function(opts) {
             this.fieldOpts = opts.fields;
             this.fields = {};
@@ -26,6 +22,7 @@
                 var field = WebvsEd.makeField(this.fieldOpts[i], {parent: this});
                 this.fields[field.key] = field;
                 this.$closest(".objectItems").append(field.el);
+                this.listenTo(field, "valueChange", this.handleChange);
             }
         },
 
@@ -60,7 +57,7 @@
 
         // event handlers
 
-        handleChange: function(event, field, fieldValue) {
+        handleChange: function(field, fieldValue) {
             if(!_.contains(this.fields, field)) {
                 return;
             }

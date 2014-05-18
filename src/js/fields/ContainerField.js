@@ -15,7 +15,6 @@
 
         events: _.extend({
             "click > .title": "toggleCollapse",
-            "valueChange .fieldBody": "handleChildValueChange"
         }, WebvsEd.Field.prototype.events),
 
         initialize: function(opts) {
@@ -23,8 +22,6 @@
                 this.collapsible = true;
                 this.startCollapsed = opts.collapsed?true:false;
             }
-
-            this.noChangeBubble = opts.noChangeBubble?true:false;
 
             // default required should be false for container fields
             var newOpts = _.extend({required: false}, opts);
@@ -53,12 +50,6 @@
                 this.$el.addClass("collapsed");
             }
             content.slideToggle();
-        },
-
-        handleChildValueChange: function(event) {
-            if(this.noChangeBubble) {
-                event.stopPropagation();
-            }
         }
     });
 

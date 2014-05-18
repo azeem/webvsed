@@ -5,12 +5,9 @@
 
         checkBoxTemplate: _.template([
             "<% if(label) { %>",
-            "    <label><%= label %>",
-            "        <input class='input' type='checkbox'/>",
-            "    </label>",
-            "<% } else { %>",
-            "    <input class='input' type='checkbox'/>",
+            "    <label for='<%= fid %>' class='fixed-width'><%= label %></label>",
             "<% } %>",
+            "<input id='<%= fid %>' class='input' type='checkbox'/>",
         ].join("")),
 
         events: _.extend({
@@ -25,6 +22,7 @@
         render: function() {
             WebvsEd.Field.prototype.render.apply(this, arguments);
             this.fieldBody.append(this.checkBoxTemplate({
+                fid: this.fid,
                 label: this.label
             }));
         },

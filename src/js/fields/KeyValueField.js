@@ -28,7 +28,6 @@
         events: _.extend({
             "click .addItem": "handleAddItem",
             "click .removeItem": "handleRemoveItem",
-            "valueChange .keyvalItem": "handleChange",
         }, WebvsEd.ContainerField.prototype.events),
 
         initialize: function(opts) {
@@ -60,9 +59,18 @@
         },
 
         renderValue: function() {
+            var i;
+            // remove existing items
+            for(i = 0;i < this.fields.length;i++) {
+                this.fields[i].keyField.remove();
+                this.fields[i].valField.remove();
+            }
+            this.fields = [];
             this.$closest(".keyvalItems").empty();
+
+            // create new item
             if(this.value) {
-                for(var i = 0;i < this.value.length;i++) {
+                for(i = 0;i < this.value.length;i++) {
                     this.addItem(this.value[i][0], this.value[i][1]);
                 }
             }
@@ -101,6 +109,9 @@
             };
             this.fields.push(fieldsEntry);
 
+            this.listenTo(keyField, "valueChange", this.handleChange);
+            this.listenTo(valField, "valueChange", this.handleChange);
+
             if(!(_.isUndefined(key) || _.isUndefined(value))) {
                 keyField.setValue(key);
                 valField.setValue(value);
@@ -134,7 +145,6 @@
         // event handlers
         handleAddItem: function() {
             var entry = this.addItem();
-            entry.keyField.$el.addClass("key");
             if(entry.keyField.valid && entry.valField.valid) {
                 this.rebuildValue();
             }
@@ -150,9 +160,8 @@
             this.rebuildValue();
         },
 
-        handleChange: function(event, field, value) {
-            var target = $(event.target);
-            var index = target.closest(".keyvalItem").index();
+        handleChange: function(field, value) {
+            var index = field.$el.closest(".keyvalItem").index();
             if(this.fields[index].keyField.valid && this.fields[index].valField.valid) {
                 this.rebuildValue();
             }

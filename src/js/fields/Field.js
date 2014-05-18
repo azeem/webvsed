@@ -242,7 +242,7 @@
             this.renderMessages();
             this.setModelValue();
             if(this.valid && !this.noTrigger) {
-                this.$el.trigger("valueChange", [this, this.getValue()]);
+                this.trigger("valueChange", this, this.getValue());
             }
         },
 
@@ -268,7 +268,7 @@
             this.renderMessages();
             if(this.valid) {
                 if(!this.noTrigger) {
-                    this.$el.trigger("valueChange", [this, this.getValue()]);
+                    this.trigger("valueChange", this, this.getValue());
                 }
             }
         }

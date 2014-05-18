@@ -31,7 +31,6 @@
         events: _.extend({
             "click .addItem": "handleAddItem",
             "click .removeItem": "handleRemoveItem",
-            "valueChange .arrayItem": "handleChange",
             "sortstart .arrayItems": "handleSortStart",
             "sortstop .arrayItems": "handleSortStop"
         }, WebvsEd.ContainerField.prototype.events),
@@ -54,6 +53,7 @@
             if(value) {
                 field.setValue(value);
             }
+            this.listenTo(field, "valueChange", this.handleChange);
             return field;
         },
 
@@ -66,9 +66,17 @@
         },
 
         renderValue: function() {
+            var i;
+            // remove all existing fields
+            for(i = 0;i < this.fields.length;i++) {
+                this.fields[i].remove();
+            }
+            this.fields = [];
             this.$closest(".arrayItems").empty();
+
+            // create new fields
             if(this.value) {
-                for(var i = 0;i < this.value.length;i++){
+                for(i = 0;i < this.value.length;i++){
                     this.addItem(this.value[i]);
                 }
             }
