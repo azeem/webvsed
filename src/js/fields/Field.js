@@ -84,6 +84,11 @@
                 this.validators = [this.validators];
             }
 
+            if(opts.hideWhen && this.model) {
+                this.hideWhen = opts.hideWhen;
+                this.listenTo(this.model, "change:" + opts.hideWhen.key, this.handleHideWhen);
+            }
+
             // init properties
             this.fid = _.uniqueId(this.fieldName);
             this.value = null;
@@ -114,6 +119,7 @@
                 title: this.title
             }));
             this.fieldBody = this.$closest(".fieldBody");
+            this.conditionalHide();
         },
 
         renderValue: function() {},
@@ -185,11 +191,11 @@
         },
 
         setKey: function(key) {
-            this.key = key;
             if(this.model) {
-                this.stopListening(this.model);
-                this.listenTo(this.model, "change:" + this.key, this.handleModelChange);
+                this.stopListening(this.model, "change:" + this.key);
+                this.listenTo(this.model, "change:" + key, this.handleModelChange);
             }
+            this.key = key;
         },
 
         isEmpty: function(value) {
@@ -254,6 +260,25 @@
             return WebvsEd.getClass("field", this.fieldName.toLowerCase());
         },
 
+        conditionalHide: function() {
+            if(!this.hideWhen) {
+                return;
+            }
+            var value = this.model.get(this.hideWhen.key);
+            var hide;
+            if(_.isFunction(this.hideWhen.condition)) {
+                hide = this.hideWhen.condition.call(this, value);
+            } else {
+                hide = (value == this.hideWhen.condition);
+            }
+
+            if(hide) {
+                this.$el.hide();
+            } else {
+                this.$el.show();
+            }
+        },
+
         // event handlers
 
         handleModelChange: function(model, value, options) {
@@ -271,6 +296,10 @@
                     this.trigger("valueChange", this, this.getValue());
                 }
             }
+        },
+
+        handleHideWhen: function(model, value) {
+            this.conditionalHide();
         }
 
     });

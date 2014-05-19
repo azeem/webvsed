@@ -51,6 +51,10 @@
                     integer: true,
                     spinner: {
                         min: 0
+                    },
+                    hideWhen: {
+                        key: "enableOnBeat",
+                        condition: false
                     }
                 },
                 {
