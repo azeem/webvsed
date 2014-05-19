@@ -180,7 +180,15 @@
         },
 
         handleTreeSelect: function(event) {
-            this.createAndOpenPanel(event.node);
+            if(event.node) {
+                this.createAndOpenPanel(event.node);
+            } else {
+                // jqtree doesnt allow us to turn off deselection,
+                // so select node again when deselecting
+                var panelInfo = this.tabsView.getCurrentPanel();
+                var node = this.tree.tree("getNodeById", panelInfo.id);
+                this.tree.tree("selectNode", node);
+            }
         },
 
         handleTreeMove: function(event) {
@@ -213,6 +221,7 @@
             if(!window.confirm("Remove '" + node.name + "'?")) {
                 return;
             }
+            this.tabsView.closePanel(node.id);
             var component = node.component.parent.detachComponent(node.component.id);
             component.destroy();
         },

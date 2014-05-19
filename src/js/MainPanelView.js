@@ -32,6 +32,8 @@
                     type: "ObjectField",
                     key: "resources",
                     title: "Resources",
+                    collapsible: true,
+                    collapsed: true,
                     fields: [
                         {
                             type: "KeyValueField",

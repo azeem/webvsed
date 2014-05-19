@@ -62,11 +62,13 @@
         },
 
         handleToolbarRemove: function() {
-            var node = this.panelView.getCurrentPanel();
-            if(!window.confirm("Remove '" + node.name + "'?")) {
+            var panelInfo = this.tabsView.getCurrentPanel();
+            var component = panelInfo.panelView.component;
+            if(!window.confirm("Remove '" + component.id + "'?")) {
                 return;
             }
-            var component = node.component.parent.detachComponent(node.component.id);
+            this.tabsView.closePanel(panelInfo.id);
+            component.parent.detachComponent(component.id);
             component.destroy();
         },
         
