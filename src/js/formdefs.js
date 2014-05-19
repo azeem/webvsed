@@ -13,6 +13,161 @@
         };
     };
 
+    FormDefs.Texer = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    enum: main.rsrcMan,
+                    enumKey: WebvsEd.makeRsrcEnum,
+                    default: "avsres_texer_circle_edgeonly_19x19.bmp",
+                    label: "Image",
+                    key: "imageSrc",
+                    model: component
+                },
+                {
+                    type: "EnumField",
+                    label: "Data Source",
+                    key: "source",
+                    model: component,
+                    enum: _.keys(Webvs.Source)
+                },
+                {
+                    type: "BooleanField",
+                    key: "resizing",
+                    label: "Resizing",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    key: "wrapAround",
+                    label: "Wrap Around",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    key: "colorFiltering",
+                    label: "Color Filtering",
+                    model: component
+                },
+                {
+                    type: "NumberField",
+                    label: "Clone",
+                    key: "clone",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 1
+                    }
+                },
+                {
+                    type: "ObjectField",
+                    title: "Code",
+                    collapsible: true,
+                    collapsed: true,
+                    key: "code",
+                    model: component,
+                    fields: [
+                        {
+                            type: "TextAreaField",
+                            key: "init",
+                            title: "Init",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perFrame",
+                            title: "Per Frame",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "onBeat",
+                            title: "On Beat",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perPoint",
+                            title: "Per Point",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        }
+                    ]
+                }
+            ]
+        };
+    };
+
+    FormDefs.MovingParticle = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "ColorField",
+                    key: "color",
+                    model: component,
+                    label: "Color",
+                },
+                {
+                    type: "NumberField",
+                    label: "Distance",
+                    key: "distance",
+                    model: component,
+                    spinner: {
+                        min: 0,
+                        step: 0.01
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "Particle Size",
+                    key: "particleSize",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 0
+                    }
+                },
+                {
+                    type: "BooleanField",
+                    key: "onBeatSizeChange",
+                    label: "Change size on beat",
+                    model: component
+                },
+                {
+                    type: "NumberField",
+                    label: "On beat size",
+                    key: "onBeatParticleSize",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 0
+                    },
+                    hideWhen: {
+                        key: "onBeatSizeChange",
+                        condition: false
+                    }
+                },
+                {
+                    type: "EnumField",
+                    label: "Blend Mode",
+                    key: "blendMode",
+                    model: component,
+                    enum: _.keys(Webvs.BlendModes)
+                },
+            ]
+        };
+    };
+
     FormDefs.EffectList = function(component, main) {
         return {
             type: "ObjectField",
