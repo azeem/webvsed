@@ -190,6 +190,8 @@
             this.valid = true;
         },
 
+        postClean: function() {},
+
         setKey: function(key) {
             if(this.model) {
                 this.stopListening(this.model, "change:" + this.key);
@@ -234,6 +236,7 @@
         setValue: function(value) {
             this.value = value;
             this.clean();
+            this.postClean();
             this.renderValue();
             this.renderMessages();
         },
@@ -245,6 +248,7 @@
         cleanAndTrigger: function(value) {
             this.value = value;
             this.clean();
+            this.postClean();
             this.renderMessages();
             this.setModelValue();
             if(this.valid && !this.noTrigger) {
@@ -289,6 +293,7 @@
             }
             this.value = value;
             this.clean(true);
+            this.postClean();
             this.renderValue();
             this.renderMessages();
             if(this.valid) {

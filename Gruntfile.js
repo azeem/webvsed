@@ -15,6 +15,7 @@ module.exports = function(grunt) {
         "src/js/fields/ArrayField.js",
         "src/js/fields/KeyValueField.js",
         "src/js/fields/ObjectField.js",
+        "src/js/fields/MatrixField.js",
         "src/js/FormDefs.js",
         "src/js/SidebarView.js",
         "src/js/TabsView.js",

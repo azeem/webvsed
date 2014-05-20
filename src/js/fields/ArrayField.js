@@ -39,7 +39,7 @@
             this.arrayItemOpts = opts.arrayItem;
 
             this.fields = [];
-            WebvsEd.ContainerField.prototype.initialize.apply(this, arguments);
+            WebvsEd.ContainerField.prototype.initialize.call(this, opts);
         },
 
         addItem: function(value) {

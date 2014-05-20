@@ -34,9 +34,23 @@
             if(rawValue instanceof WebvsEd.InvalidValue) {
                 return rawValue;
             }
-
             var value = $.trim(rawValue);
+        },
+
+        validate: function(value) {
+            if(value.substring(0, 5) != "data:" && !this.urlPattern.test(value)) {
+                return new WebvsEd.InvalidValue(rawValue, "Value should be a URL or a Data URI");
+            }
+        },
+
+        postClean: function() {
             this.isData = false;
+            this.mimeType = null;
+
+            if(!this.valid) {
+                return;
+            }
+
             if(value.substring(0, 5) == "data:") {
                 var mimeType = value.substring(5, value.indexOf(",")).split(";")[0];
                 if(mimeType == "base64" || mimeType.indexOf("charset") === 0) {
@@ -45,10 +59,6 @@
                 this.mimeType = mimeType;
                 this.isData = true;
                 return value;
-            } else if(this.urlPattern.test(value)) {
-                return value;
-            } else {
-                return new WebvsEd.InvalidValue(rawValue, "Value should be a URL or a Data URI");
             }
         },
 

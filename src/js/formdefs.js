@@ -13,6 +13,109 @@
         };
     };
 
+    FormDefs.EffectList = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    label: "Output Blend Mode",
+                    key: "output",
+                    model: component,
+                    enum: _.keys(Webvs.EffectList.ELBlendModes)
+                },
+                {
+                    type: "EnumField",
+                    label: "Input Blend Mode",
+                    key: "input",
+                    model: component,
+                    enum: _.keys(Webvs.EffectList.ELBlendModes)
+                },
+                {
+                    type: "BooleanField",
+                    key: "clearFrame",
+                    label: "Clear Frame",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    key: "enableOnBeat",
+                    label: "Enable on beat",
+                    model: component
+                },
+                {
+                    type: "NumberField",
+                    label: "Enable on beat for",
+                    key: "enableOnBeatFor",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 0
+                    },
+                    hideWhen: {
+                        key: "enableOnBeat",
+                        condition: false
+                    }
+                },
+                {
+                    type: "ObjectField",
+                    title: "Code",
+                    collapsible: true,
+                    collapsed: true,
+                    key: "code",
+                    model: component,
+                    fields: [
+                        {
+                            type: "TextAreaField",
+                            key: "init",
+                            title: "Init",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perFrame",
+                            title: "Per Frame",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        }
+                    ]
+                }
+            ]
+        };
+    };
+
+    // Trans
+
+    FormDefs.FadeOut = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "ColorField",
+                    key: "color",
+                    model: component,
+                    label: "Fade Color",
+                },
+                {
+                    type: "NumberField",
+                    label: "Fade speed",
+                    key: "speed",
+                    model: component,
+                    spinner: {
+                        min: 0,
+                        max: 1,
+                        step: 0.01
+                    }
+                }
+            ]
+        };
+    };
+
+    // Render
+
     FormDefs.Texer = function(component, main) {
         return {
             type: "ObjectField",
@@ -168,79 +271,6 @@
         };
     };
 
-    FormDefs.EffectList = function(component, main) {
-        return {
-            type: "ObjectField",
-            fields: [
-                {
-                    type: "EnumField",
-                    label: "Output Blend Mode",
-                    key: "output",
-                    model: component,
-                    enum: _.keys(Webvs.EffectList.ELBlendModes)
-                },
-                {
-                    type: "EnumField",
-                    label: "Input Blend Mode",
-                    key: "input",
-                    model: component,
-                    enum: _.keys(Webvs.EffectList.ELBlendModes)
-                },
-                {
-                    type: "BooleanField",
-                    key: "clearFrame",
-                    label: "Clear Frame",
-                    model: component
-                },
-                {
-                    type: "BooleanField",
-                    key: "enableOnBeat",
-                    label: "Enable on beat",
-                    model: component
-                },
-                {
-                    type: "NumberField",
-                    label: "Enable on beat for",
-                    key: "enableOnBeatFor",
-                    model: component,
-                    integer: true,
-                    spinner: {
-                        min: 0
-                    },
-                    hideWhen: {
-                        key: "enableOnBeat",
-                        condition: false
-                    }
-                },
-                {
-                    type: "ObjectField",
-                    title: "Code",
-                    collapsible: true,
-                    collapsed: true,
-                    key: "code",
-                    model: component,
-                    fields: [
-                        {
-                            type: "TextAreaField",
-                            key: "init",
-                            title: "Init",
-                            rows: 5,
-                            keyupChange: true,
-                            required: false
-                        },
-                        {
-                            type: "TextAreaField",
-                            key: "perFrame",
-                            title: "Per Frame",
-                            rows: 5,
-                            keyupChange: true,
-                            required: false
-                        }
-                    ]
-                }
-            ]
-        };
-    };
 
     FormDefs.Picture = function(component, main) {
         return {
