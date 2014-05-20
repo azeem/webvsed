@@ -114,6 +114,51 @@
         };
     };
 
+    FormDefs.Convolution = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    enum: _.keys(Webvs.Convolution.EdgeModes),
+                    label: "Edge Mode",
+                    key: "edgeMode",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    key: "autoScale",
+                    label: "Auto Scale",
+                    model: component
+                },
+                {
+                    type: "NumberField",
+                    label: "Scale",
+                    key: "scale",
+                    model: component,
+                    hideWhen: {
+                        key: "autoScale",
+                        condition: true
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "Bias",
+                    key: "bias",
+                    model: component,
+                },
+                {
+                    type: "MatrixField",
+                    title: "Kernel",
+                    key: "kernel",
+                    model: component,
+                    minSize: 3,
+                    sizeStep: 2
+                }
+            ]
+        };
+    };
+
     // Render
 
     FormDefs.Texer = function(component, main) {

@@ -36,6 +36,10 @@
             if(_.isUndefined(this.defaultCellValue)) {
                 this.defaultCellValue = 0;
             }
+
+            this.minSize = _.isUndefined(opts.minSize)?3:opts.minSize;
+            this.sizeStep = opts.sizeStep || 1;
+
             WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
@@ -75,7 +79,7 @@
         rebuildValue: function() {
             var value = [];
             this.$(".matrix input").each(function() {
-                var cellValue = parseInt($(this).val());
+                var cellValue = parseFloat($(this).val());
                 value.push(cellValue);
             });
             this.cleanAndTrigger(value);
@@ -85,7 +89,7 @@
 
         handleChange: function(event) {
             var target = $(event.target);
-            var value = parseInt(target.val());
+            var value = parseFloat(target.val());
             if(_.isNaN(value)) {
                 value = this.defaultCellValue;
             }
@@ -94,23 +98,25 @@
         },
 
         handleSizeIncrease: function() {
-            var i;
+            var i, j;
             var newValue = [];
             if(!this.value) {
-                for(i = 0;i < 4;i++) {
+                for(i = 0;i < this.minSize*this.minSize;i++) {
                     newValue.push(this.defaultCellValue);
                 }
             } else {
                 var currentSize = this.matrixSize(this.value);
-                // add new column
+                // add new columns
                 for(i = 0;i < this.value.length;i++) {
                     newValue.push(this.value[i]);
                     if((i+1)%currentSize === 0) {
-                        newValue.push(this.defaultCellValue);
+                        for(j = 0;j < this.sizeStep;j++) {
+                            newValue.push(this.defaultCellValue);
+                        }
                     }
                 }
-                // add new row
-                for(i = 0;i < currentSize+1;i++) {
+                // add new rows
+                for(i = 0;i < (currentSize+this.sizeStep)*this.sizeStep;i++) {
                     newValue.push(this.defaultCellValue);
                 }
             }
@@ -121,13 +127,13 @@
         handleSizeDecrease: function() {
             var i;
             var currentSize = this.matrixSize(this.value);
-            if(currentSize == 2) {
+            if(currentSize == this.minSize) {
                 return;
             }
             var newValue = [];
-            // add new column
-            for(i = 0;i < this.value.length-currentSize;i++) {
-                if((i+1)%currentSize !== 0) {
+            // remove columns and rows
+            for(i = 0;i < this.value.length-currentSize*this.sizeStep;i++) {
+                if((i%currentSize) < (currentSize-this.sizeStep)) {
                     newValue.push(this.value[i]);
                 }
             }

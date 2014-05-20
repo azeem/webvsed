@@ -11,8 +11,6 @@
         initialize: function(opts) {
             if($.isPlainObject(opts.spinner)) {
                 this.spinner = opts.spinner;
-            } else {
-                this.spinner = {};
             }
 
             this.integer = opts.integer?true:false;
