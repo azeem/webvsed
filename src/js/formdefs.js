@@ -89,6 +89,51 @@
 
     // Trans
 
+    FormDefs.ColorMap = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    key: "key",
+                    enum: _.keys(Webvs.ColorMap.MapKey),
+                    model: component,
+                    label: "Map Key",
+                },
+                {
+                    type: "EnumField",
+                    key: "output",
+                    enum: _.keys(Webvs.BlendModes),
+                    model: component,
+                    label: "Blend Mode",
+                },
+                {
+                    type: "EnumField",
+                    key: "mapCycleMode",
+                    enum: _.keys(Webvs.ColorMap.MapCycleModes),
+                    model: component,
+                    label: "Map Cycle Mode",
+                },
+                {
+                    type: "ArrayField",
+                    title: "Color Maps",
+                    key: "maps",
+                    model: component,
+                    collapsible: true,
+                    collapsed: true,
+                    arrayItem: {
+                        type: "GradientField",
+                        gradientWidth: 300,
+                        default: [
+                            {index: 0, color: "#000000"},
+                            {index: 255, color: "#FFFFFF"}
+                        ]
+                    }
+                }
+            ]
+        };
+    };
+
     FormDefs.FadeOut = function(component, main) {
         return {
             type: "ObjectField",

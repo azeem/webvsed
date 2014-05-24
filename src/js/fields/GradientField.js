@@ -4,8 +4,8 @@
         fieldName: "GradientField",
 
         template: _.template([
-            "    <div title='Click to add color stops' class='gradient'></div>",
-            "    <div class='color-stops'></div>",
+            "<div title='Click to add color stops' class='gradient'></div>",
+            "<div class='color-stops'></div>",
             "<div class='color-picker'><input type'text'/></div>"
         ].join("")),
 
@@ -34,7 +34,7 @@
 
         initialize: function(opts) {
             this.colorStops = [];
-            this.gradientWidth = opts.gradientWidth || 450;
+            this.gradientWidth = opts.gradientWidth || 400;
             this.colorStopWidth = opts.colorStopWidth || 20;
             WebvsEd.Field.prototype.initialize.call(this, opts);
         },
@@ -134,6 +134,16 @@
             }
         },
 
+        showBelow: function(target, item) {
+            item.show();
+            var pos = target.offset();
+            var parentPos = item.offsetParent().offset();
+            pos.top -= parentPos.top;
+            pos.left -= parentPos.left;
+            pos.top += target.outerHeight();
+            item.css(pos);
+        },
+
         // event handlers
 
         handleDrag: function() {
@@ -158,18 +168,14 @@
 
         handleColorStopMenu: function(event) {
             var colorStop = $(event.target);
-            var pos = colorStop.offset();
-            pos.top += colorStop.outerHeight();
-            this.ctxtMenu.css(pos).show();
-            event.preventDefault();
-
             if(this.$(".color-stops .color-stop").length == 2) {
                 this.ctxtMenu.find(".remove").hide();
             } else {
                 this.ctxtMenu.find(".remove").show();
             }
-
+            this.showBelow(colorStop, this.ctxtMenu);
             this.ctxtColorStop = colorStop;
+            event.preventDefault();
         },
 
         handleColorChange: function(event, color) {
@@ -187,12 +193,10 @@
         },
 
         handleMenuEdit: function(event) {
-            var pos = this.ctxtColorStop.offset();
-            pos.top += this.ctxtColorStop.outerHeight();
             var color = this.ctxtColorStop.data("webvsedColor");
             // set color twice so that initial selection is cleared
             this.colorPicker.find("input").spectrum("set", color).spectrum("set", color);
-            this.colorPicker.css(pos).show();
+            this.showBelow(this.ctxtColorStop, this.colorPicker);
             this.ctxtMenu.hide();
             event.stopImmediatePropagation();
         },

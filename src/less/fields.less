@@ -59,43 +59,45 @@
 }
 
 .webvsed-list-container() {
-    > .controls {
-        background-color: #EEEEEE;
-        padding: 3px;
-        margin: 0px 0px 4px 0px;
-    }
-
-    > .items > .item {
-        border-bottom: 1px dashed #AAAAAA;
-        padding: 0px 0px 5px 0px;
-        margin: 0px 0px 5px 0px;
-
-        &:last-child {
-            border-bottom: none;
-        }
-
+    > .content > .fieldBody {
         > .controls {
-            display: none;
-            float: right;
-            padding: 4px;
-            margin: 0px 0px 4px 4px;
-            background-color: white;
-
-            .movehandle {
-                display: inline-block;
-                background-color: transparent;
-                cursor: move;
-                width: 16px;
-                height: 16px;
-                margin: 0px;
-                vertical-align: middle;
-            }
+            background-color: #EEEEEE;
+            padding: 3px;
+            margin: 0px 0px 4px 0px;
         }
 
-        &:hover {
-            background-color: #F0EAC0;
+        > .items > .item {
+            border-bottom: 1px dashed #AAAAAA;
+            padding: 0px 0px 5px 0px;
+            margin: 0px 0px 5px 0px;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
             > .controls {
-                display: block;
+                display: none;
+                float: right;
+                padding: 4px;
+                margin: 0px 0px 4px 4px;
+                background-color: white;
+
+                .movehandle {
+                    display: inline-block;
+                    background-color: transparent;
+                    cursor: move;
+                    width: 16px;
+                    height: 16px;
+                    margin: 0px;
+                    vertical-align: middle;
+                }
+            }
+
+            &:hover {
+                background-color: #F0EAC0;
+                > .controls {
+                    display: block;
+                }
             }
         }
     }
@@ -114,24 +116,6 @@
     .webvsed-containerfield();
     .webvsed-list-container();
 }
-
-/*.webvsed-gradientfield {
-    .webvsed-containerfield();
-
-    .gradient {
-        height: 50px;
-        border: 1px solid #AAAAAA;
-        margin: 5px;
-    }
-
-    .color-stops {
-        .webvsed-containerfield();
-        .webvsed-list-container();
-        .items > .item > .controls > .movehandle {
-            display: none;
-        }
-    }
-}*/
 
 @urifield-width: 250px;
 @urifield-preview-width: 50px;
