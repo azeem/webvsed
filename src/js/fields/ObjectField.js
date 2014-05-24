@@ -12,6 +12,7 @@
             this.fields = {};
 
             WebvsEd.ContainerField.prototype.initialize.apply(this, arguments);
+            this.rebuildValue(true);
         },
 
         render: function() {
@@ -46,13 +47,17 @@
             WebvsEd.ContainerField.prototype.remove.apply(this, arguments);
         },
 
-        rebuildValue: function() {
+        rebuildValue: function(set) {
             var value = {};
             for(var key in this.fields) {
                 var field = this.fields[key];
                 value[key] = field.getValue();
             }
-            this.cleanAndTrigger(value);
+            if(set) {
+                this.setValue(value);
+            } else {
+                this.cleanAndTrigger(value);
+            }
         },
 
         // event handlers

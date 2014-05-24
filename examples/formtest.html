@@ -32,6 +32,14 @@
         collapsible: true,
         fields: [
             {
+                type: "GradientField",
+                title: "Gradient",
+                default: [
+                    {index: 100, color: "#FF00FF"},
+                    {index: 10, color: "#FFFF00"}
+                ]
+            },
+            {
                 key: "color",
                 model: myModel,
                 type: "ColorField",
@@ -98,7 +106,8 @@
             },
             {
                 type: "MatrixField"
-            }
+            },
+    
         ]
     });
     $("#container").append(field.el);
