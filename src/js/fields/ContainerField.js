@@ -28,8 +28,8 @@
             WebvsEd.Field.prototype.initialize.call(this, newOpts);
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.apply(this, arguments);
             if(this.collapsible) {
                 this.$el.addClass("collapsible");
             }

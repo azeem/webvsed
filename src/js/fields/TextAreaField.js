@@ -21,11 +21,11 @@
                 this.debouncedChangeValue = _.debounce(_.bind(this.changeValue, this), this.debounceWait);
             }
 
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
+            WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.textAreaTemplate({
                 rows: this.rows,
                 cols: this.cols

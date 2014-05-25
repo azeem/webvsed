@@ -57,8 +57,8 @@
             }
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.call(this);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.template());
         },
 

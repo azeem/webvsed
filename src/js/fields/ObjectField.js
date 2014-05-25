@@ -10,19 +10,23 @@
         initialize: function(opts) {
             this.fieldOpts = opts.fields;
             this.fields = {};
-
-            WebvsEd.ContainerField.prototype.initialize.apply(this, arguments);
-            this.rebuildValue(true);
+            WebvsEd.ContainerField.prototype.initialize.call(this, opts);
         },
 
         render: function() {
-            WebvsEd.ContainerField.prototype.render.apply(this, arguments);
+            WebvsEd.ContainerField.prototype.render.call(this);
+            this.rebuildValue(true);
+        },
+
+        renderField: function() {
+            WebvsEd.ContainerField.prototype.renderField.call(this);
             this.fieldBody.append(this.objectTemplate());
 
             for(var i = 0;i < this.fieldOpts.length;i++) {
                 var field = WebvsEd.makeField(this.fieldOpts[i], {parent: this});
                 this.fields[field.key] = field;
                 this.$closest(".objectItems").append(field.el);
+                field.render();
                 this.listenTo(field, "valueChange", this.handleChange);
             }
         },

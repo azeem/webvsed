@@ -71,6 +71,7 @@
         render: function() {
             this.mainForm = WebvsEd.makeField(MainForm(this.main));
             this.$el.append(this.mainForm.el);
+            this.mainForm.render();
         }
     });
 

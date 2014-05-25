@@ -16,11 +16,11 @@
 
         initialize: function(opts) {
             this.label = opts.label;
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
+            WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.inputTemplate({
                 fid: this.fid,
                 label: this.label

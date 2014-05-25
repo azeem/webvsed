@@ -35,6 +35,8 @@
             });
 
             this.$(".header").append(this.enableField.el).append(this.idField.el);
+            this.enableField.render();
+            this.idField.render();
 
             var componentClass = this.component.constructor.Meta.name;
             var formDef;
@@ -45,6 +47,7 @@
             }
             this.componentForm = WebvsEd.makeField(formDef(this.component, this.main));
             this.$(".body").append(this.componentForm.el);
+            this.componentForm.render();
         },
 
         remove: function() {

@@ -46,13 +46,12 @@
 
             this.label = opts.label;
             this.radio = opts.radio?true:false;
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
+            WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.renderEnum();
-
             if(this.enumModel) {
                 // listen for enumeration changes
                 this.listenTo(this.enumModel, 'change', this.handleEnumChange);

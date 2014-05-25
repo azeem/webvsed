@@ -48,6 +48,7 @@
             var item = $(this.itemTemplate());
             this.$closest(".arrayItems").append(item);
             item.find(".itemBody").append(field.el);
+            field.render();
 
             this.fields.push(field);
             if(value) {
@@ -57,8 +58,8 @@
             return field;
         },
 
-        render: function() {
-            WebvsEd.ContainerField.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.ContainerField.prototype.renderField.call(this);
             this.fieldBody.append(this.arrayTemplate());
             this.$closest(".arrayItems").sortable({
                 handle: ".movehandle"

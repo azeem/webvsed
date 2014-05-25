@@ -96,7 +96,20 @@
             this.messages = [];
 
             this.setKey(opts.key);
-            this.render();
+        },
+
+        render: function() {
+            if(!this.title) {
+                this.$el.addClass("no-title");
+            }
+            this.$el.html(this.baseTemplate({
+                title: this.title
+            }));
+            this.fieldBody = this.$closest(".fieldBody");
+            this.conditionalHide();
+
+            // call sub render
+            this.renderField();
 
             // set the initial value from model or
             // defaultValue
@@ -111,16 +124,7 @@
             }
         },
 
-        render: function() {
-            if(!this.title) {
-                this.$el.addClass("no-title");
-            }
-            this.$el.html(this.baseTemplate({
-                title: this.title
-            }));
-            this.fieldBody = this.$closest(".fieldBody");
-            this.conditionalHide();
-        },
+        renderField: function() {},
 
         renderValue: function() {},
 

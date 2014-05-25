@@ -35,6 +35,7 @@
         initialize: function(opts) {
             this.main = opts.main;
             this.tabsView = opts.tabsView;
+            this.listenTo(this.tabsView, "panelActivate", this.handlePanelActivate);
         },
 
         render: function() {
@@ -59,8 +60,6 @@
                 onCanMoveTo: _.bind(this.handleTreeCanMoveTo, this),
                 data:[this.buildTree()]
             });
-
-            this.listenTo(this.tabsView, "panelActivate", this.handlePanelActivate);
 
             // hide menu on click anywhere
             $("body").on("click", _.bind(function() {

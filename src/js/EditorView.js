@@ -18,7 +18,6 @@
 
         render: function() {
             this.$el.append(this.template());
-            this.toolbar = this.$el.find(".row1 .toolbar");
 
             this.tabsView = new WebvsEd.TabsView();
             this.tabsView.render();

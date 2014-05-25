@@ -14,7 +14,7 @@
             }
 
             this.integer = opts.integer?true:false;
-            WebvsEd.TextField.prototype.initialize.apply(this, arguments);
+            WebvsEd.TextField.prototype.initialize.call(this, opts);
         },
 
         parseValue: function(rawValue) {
@@ -36,8 +36,8 @@
             }
         },
 
-        render: function() {
-            WebvsEd.TextField.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.TextField.prototype.renderField.call(this);
             if(this.spinner) {
                 this.$closest(".input").spinner(this.spinner);
             }

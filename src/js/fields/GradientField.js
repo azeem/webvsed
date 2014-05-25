@@ -40,6 +40,11 @@
         },
 
         parseValue: function(rawValue) {
+            rawValue = WebvsEd.Field.prototype.parseValue(rawValue);
+            if(rawValue instanceof WebvsEd.InvalidValue) {
+                return rawValue;
+            }
+
             if(!_.isArray(rawValue)) {
                 return new WebvsEd.InvalidValue(rawValue, "Value should be an array");
             }
@@ -55,8 +60,8 @@
             return _.sortBy(rawValue, "index");
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.call(this);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.template());
             this.colorPicker = this.$(".color-picker");
             this.colorPicker.css("position", "absolute").hide();

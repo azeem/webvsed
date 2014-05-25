@@ -18,7 +18,7 @@
 
         initialize: function(opts) {
             this.label = opts.label;
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
+            WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
         validate: function(rawValue) {
@@ -27,8 +27,8 @@
             }
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             var html = this.inputTemplate({
                 fid: this.fid,
                 label: this.label,

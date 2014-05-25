@@ -25,8 +25,8 @@
         }, WebvsEd.Field.prototype.events),
 
         initialize: function(opts) {
-            WebvsEd.Field.prototype.initialize.apply(this, arguments);
             this.isData = false;
+            WebvsEd.Field.prototype.initialize.call(this, opts);
         },
 
         parseValue: function(rawValue) {
@@ -66,8 +66,8 @@
             return (WebvsEd.Field.prototype.isEmpty(value) || value === "");
         },
 
-        render: function() {
-            WebvsEd.Field.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.inputTemplate());
         },
 

@@ -35,7 +35,7 @@
             this.keyFieldOpts = opts.keyField;
 
             this.fields = [];
-            WebvsEd.ContainerField.prototype.initialize.apply(this, arguments);
+            WebvsEd.ContainerField.prototype.initialize.call(this, opts);
         },
 
         parseValue: function(rawValue) {
@@ -53,8 +53,8 @@
             }
         },
 
-        render: function() {
-            WebvsEd.ContainerField.prototype.render.apply(this, arguments);
+        renderField: function() {
+            WebvsEd.ContainerField.prototype.renderField.call(this);
             this.fieldBody.append(this.keyvalTemplate());
         },
 
@@ -102,6 +102,8 @@
             var itemHtml = $(this.itemTemplate());
             this.$closest(".keyvalItems").append(itemHtml);
             itemHtml.find(".itemBody").append(keyField.el).append(valField.el);
+            keyField.render();
+            valField.render();
 
             var fieldsEntry = {
                 keyField: keyField,
