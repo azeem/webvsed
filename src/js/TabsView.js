@@ -74,6 +74,9 @@
 
         closePanel: function(id) {
             var panelInfo = this.panelInfo[id];
+            if(!panelInfo) {
+                return;
+            }
 
             panelInfo.panelView.remove();
             if(panelInfo.tab) {

@@ -87,6 +87,75 @@
         };
     };
 
+    // misc
+    FormDefs.BufferSave = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    enum: _.keys(Webvs.BufferSave.Actions),
+                    label: "Action",
+                    key: "action",
+                    model: component
+                },
+                {
+                    type: "TextField",
+                    label: "Buffer Id",
+                    key: "bufferId",
+                    model: component,
+                },
+                {
+                    type: "EnumField",
+                    key: "blendMode",
+                    enum: _.keys(Webvs.BlendModes),
+                    model: component,
+                    label: "Blend Mode",
+                }
+            ]
+        };
+    };
+
+    FormDefs.GlobalVar = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "ObjectField",
+                    title: "Code",
+                    key: "code",
+                    model: component,
+                    fields: [
+                        {
+                            type: "TextAreaField",
+                            key: "init",
+                            title: "Init",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perFrame",
+                            title: "Per Frame",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "onBeat",
+                            title: "On Beat",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        }
+                    ]
+                }
+            ]
+        };
+    };
+
     // Trans
 
     FormDefs.ColorMap = function(component, main) {
@@ -276,6 +345,166 @@
                         }
                     ]
                 }
+            ]
+        };
+    };
+
+    FormDefs.ChannelShift = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    enum: _.keys(Webvs.ChannelShift.Channels),
+                    label: "Channel Order",
+                    key: "channel",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "OnBeat Random",
+                    key: "onBeatRandom",
+                    model: component,
+                }
+            ]
+        };
+    };
+
+    FormDefs.Mirror = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "BooleanField",
+                    label: "Top to Bottom",
+                    key: "topToBottom",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "Bottom to Top",
+                    key: "bottomToTop",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "Left to Right",
+                    key: "leftToRight",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "Right to Left",
+                    key: "rightToLeft",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "OnBeat Random",
+                    key: "onBeatRandom",
+                    model: component,
+                },
+                {
+                    type: "BooleanField",
+                    label: "Smooth Transition",
+                    key: "smoothTransition",
+                    model: component,
+                },
+                {
+                    type: "NumberField",
+                    label: "Transition Duration",
+                    key: "transitionDuration",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min:1,
+                        step: 1
+                    },
+                    hideWhen: {
+                        key: "smoothTransition",
+                        condition: false 
+                    }
+                },
+            ]
+        };
+    };
+
+    FormDefs.UniqueTone = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "ColorField",
+                    label: "Color",
+                    key: "color",
+                    model: component
+                },
+                {
+                    type: "BooleanField",
+                    label: "Invert",
+                    key: "invert",
+                    model: component,
+                },
+                {
+                    type: "EnumField",
+                    label: "Blend Mode",
+                    key: "blendMode",
+                    model: component,
+                    enum: _.keys(Webvs.BlendModes)
+                },
+            ]
+        };
+    };
+
+    FormDefs.Invert = function(component, main) {
+        return [
+            "Invert component does nothing more than inverting the color values.",
+            "Enable or disable invert using the header.",
+            "No other options are available."
+        ].join(" ");
+    };
+
+    FormDefs.Mosaic = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "NumberField",
+                    label: "Square Size",
+                    key: "squareSize",
+                    model: component,
+                    spinner: {
+                        min: 0,
+                        max: 1,
+                        step: 0.01
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "OnBeat Square Size",
+                    key: "onBeatSquareSize",
+                    model: component,
+                    spinner: {
+                        min: 0,
+                        max: 1,
+                        step: 0.01
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "OnBeat Size Duration",
+                    key: "onBeatSizeDuration",
+                    model: component,
+                    integer: true,
+                    spinner: true
+                },
+                {
+                    type: "EnumField",
+                    label: "Blend Mode",
+                    key: "blendMode",
+                    model: component,
+                    enum: _.keys(Webvs.BlendModes)
+                },
             ]
         };
     };

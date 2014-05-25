@@ -10,6 +10,10 @@
             "</div>"
         ].join("")),
 
+        messageTemplate: _.template([
+            "<div class='component-message'><p><%= message %></p></div>"
+        ].join("")),
+
         initialize: function(opts) {
             this.component = opts.component;
             this.main = opts.main;
@@ -45,15 +49,22 @@
             } else {
                 formDef = WebvsEd.FormDefs.Default;
             }
-            this.componentForm = WebvsEd.makeField(formDef(this.component, this.main));
-            this.$(".body").append(this.componentForm.el);
-            this.componentForm.render();
+            formDef = formDef(this.component, this.main);
+            if(_.isString(formDef)) {
+                this.$(".body").append(this.messageTemplate({message: formDef}));
+            } else {
+                this.componentForm = WebvsEd.makeField(formDef);
+                this.$(".body").append(this.componentForm.el);
+                this.componentForm.render();
+            }
         },
 
         remove: function() {
             this.enableField.remove();
             this.idField.remove();
-            this.componentForm.remove();
+            if(this.componentForm) {
+                this.componentForm.remove();
+            }
             Backbone.View.prototype.remove.call(this);
         }
     });
