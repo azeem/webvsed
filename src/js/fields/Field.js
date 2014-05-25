@@ -279,6 +279,9 @@
             } else {
                 hide = (value == this.hideWhen.condition);
             }
+            if(this.hideWhen.inverse) {
+                hide = !hide;
+            }
 
             if(hide) {
                 this.$el.hide();

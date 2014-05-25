@@ -134,6 +134,152 @@
         };
     };
 
+    FormDefs.ColorClip = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "EnumField",
+                    key: "mode",
+                    enum: _.keys(Webvs.ColorClip.ClipModes),
+                    model: component,
+                    label: "Clip Mode",
+                },
+                {
+                    type: "NumberField",
+                    key: "level",
+                    model: component,
+                    label: "Near Level",
+                    spinner: {
+                        min: 0,
+                        max: 1,
+                        step: 0.01
+                    },
+                    hideWhen: {
+                        key: "mode",
+                        condition: "NEAR",
+                        inverse: true
+                    }
+                },
+                {
+                    type: "ColorField",
+                    key: "color",
+                    model: component,
+                    label: "Clip Color",
+                },
+                {
+                    type: "ColorField",
+                    key: "outColor",
+                    model: component,
+                    label: "Output Color",
+                }
+            ]
+        };
+    };
+
+    FormDefs.DynamicMovement = function(component, main) {
+        return {
+            type: "ObjectField",
+            fields: [
+                {
+                    type: "BooleanField",
+                    key: "bFilter",
+                    model: component,
+                    label: "Bilinear Filter",
+                },
+                {
+                    type: "BooleanField",
+                    key: "blend",
+                    model: component,
+                    label: "Blend Output",
+                },
+                {
+                    type: "BooleanField",
+                    key: "noGrid",
+                    model: component,
+                    label: "Disable Grid",
+                },
+                {
+                    type: "NumberField",
+                    label: "Grid Width",
+                    key: "gridW",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 1
+                    },
+                    hideWhen: {
+                        key: "noGrid",
+                        condition: true
+                    }
+                },
+                {
+                    type: "NumberField",
+                    label: "Grid Height",
+                    key: "gridH",
+                    model: component,
+                    integer: true,
+                    spinner: {
+                        min: 1
+                    },
+                    hideWhen: {
+                        key: "noGrid",
+                        condition: true
+                    }
+                },
+                {
+                    type: "EnumField",
+                    key: "coord",
+                    enum: _.keys(Webvs.DynamicMovement.CoordModes),
+                    model: component,
+                    label: "Coordinates Mode",
+                },
+                {
+                    type: "ObjectField",
+                    title: "Code",
+                    collapsible: true,
+                    collapsed: true,
+                    key: "code",
+                    model: component,
+                    fields: [
+                        {
+                            type: "TextAreaField",
+                            key: "init",
+                            title: "Init",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perFrame",
+                            title: "Per Frame",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "onBeat",
+                            title: "On Beat",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        },
+                        {
+                            type: "TextAreaField",
+                            key: "perPixel",
+                            title: "Per Pixel",
+                            rows: 5,
+                            keyupChange: true,
+                            required: false
+                        }
+                    ]
+                }
+            ]
+        };
+    };
+
     FormDefs.FadeOut = function(component, main) {
         return {
             type: "ObjectField",
