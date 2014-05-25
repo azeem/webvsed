@@ -34,7 +34,7 @@
             if(rawValue instanceof WebvsEd.InvalidValue) {
                 return rawValue;
             }
-            var value = $.trim(rawValue);
+            return $.trim(rawValue);
         },
 
         validate: function(value) {
@@ -51,14 +51,13 @@
                 return;
             }
 
-            if(value.substring(0, 5) == "data:") {
-                var mimeType = value.substring(5, value.indexOf(",")).split(";")[0];
+            if(this.value.substring(0, 5) == "data:") {
+                var mimeType = this.value.substring(5, this.value.indexOf(",")).split(";")[0];
                 if(mimeType == "base64" || mimeType.indexOf("charset") === 0) {
                     mimeType = "text/plain";
                 }
                 this.mimeType = mimeType;
                 this.isData = true;
-                return value;
             }
         },
 

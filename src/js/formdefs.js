@@ -123,7 +123,7 @@
                     collapsed: true,
                     arrayItem: {
                         type: "GradientField",
-                        gradientWidth: 300,
+                        gradientWidth: 320,
                         default: [
                             {index: 0, color: "#000000"},
                             {index: 255, color: "#FFFFFF"}

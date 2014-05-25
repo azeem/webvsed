@@ -49,7 +49,7 @@
             } else {
                 this.$el.addClass("collapsed");
             }
-            content.slideToggle();
+            content.toggle();
         }
     });
 
