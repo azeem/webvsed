@@ -7,10 +7,6 @@
             "<div class='tabs'>",
             "    <ul></ul>",
             "</div>",
-            "<ul class='ctxtmenu panelctxtmenu'>",
-            "    <li class='pop'><a href='#'><span class='ui-icon ui-icon-arrowthick-1-ne'></span>Popout</a></li>",
-            "    <li class='close'><a href='#'><span class='ui-icon ui-icon-close'></span>Close</a></li>",
-            "</ul>"
         ].join("")),
 
         tabTemplate: _.template(
@@ -20,6 +16,13 @@
         panelTemplate: _.template([
             "<div data-webvsed-panel-id='<%= id %>' class='panel' id='webvsed-panel-<%= id %>'>",
             "</div>"
+        ].join("")),
+
+        ctxtMenuTemplate: _.template([
+            "<ul class='ctxtmenu panelctxtmenu'>",
+            "    <li class='pop'><a href='#'><span class='ui-icon ui-icon-arrowthick-1-ne'></span>Popout</a></li>",
+            "    <li class='close'><a href='#'><span class='ui-icon ui-icon-close'></span>Close</a></li>",
+            "</ul>"
         ].join("")),
 
         popMenuTextTemplate: _.template([
@@ -32,14 +35,17 @@
 
         events: {
             "contextmenu > .tabs ul li": "handleTabCtxtMenu",
-            "click > .panelctxtmenu .close":  "handleMenuClose",
-            "click > .panelctxtmenu .pop":    "handleMenuPop",
             "tabsactivate > .tabs":      "handlePanelActivate",
-            "dialogbeforeclose":         "handleDialogClose",
-            "contextmenu > .ui-dialog .ui-dialog-titlebar": "handleDialogCtxtMenu",
             "click > .tabs ul .ui-state-active": "handlePanelActivate",
             "mousedown > .tabs .panel":          "handlePanelActivate",
-            "mousedown > .ui-dialog":            "handlePanelActivate"
+        },
+
+        floatEvents: {
+            "click .panelctxtmenu .close":  "handleMenuClose",
+            "click .panelctxtmenu .pop":    "handleMenuPop",
+            "dialogbeforeclose .ui-dialog": "handleDialogClose",
+            "mousedown .ui-dialog":         "handlePanelActivate",
+            "contextmenu .ui-dialog .ui-dialog-titlebar": "handleDialogCtxtMenu"
         },
 
         initialize: function() {
@@ -56,8 +62,11 @@
             });
 
             this.tabList = this.tabs.find("ul");
-            this.ctxtMenu = this.$el.children(".ctxtmenu");
+
+            this.ctxtMenu = $(this.ctxtMenuTemplate());
+            this.floatContainer.append(this.ctxtMenu);
             this.ctxtMenu.menu().hide().css("position", "absolute");
+
             $("body").on("click", _.bind(function() {
                 this.ctxtMenu.hide();
                 this.ctxtMenuPanel = null;
@@ -127,7 +136,7 @@
                 panelInfo.tab = null;
                 panelInfo.panel.dialog({
                     title: panelInfo.title,
-                    appendTo: this.el,
+                    appendTo: this.floatContainer,
                     width: 500,
                     height: 500
                 });
@@ -231,5 +240,7 @@
             event.preventDefault();
         }
     });
+
+    WebvsEd.FloatsMixin(WebvsEd.TabsView);
 
 })(jQuery, _, Backbone);

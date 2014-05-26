@@ -24,12 +24,14 @@
             "tree.select .tree": "handleTreeSelect",
             "tree.move .tree": "handleTreeMove",
             "resize .resize-container": "handleResize",
+        },
 
-            "click > .treectxtmenu .component-add": "handleMenuAdd",
-            "click > .treectxtmenu .remove": "handleMenuRemove",
-            "click > .treectxtmenu .disable": "handleMenuEnableDisable",
-            "click > .treectxtmenu .enable": "handleMenuEnableDisable",
-            "click > .treectxtmenu .set-id": "handleMenuSetId",
+        floatEvents: {
+            "click .treectxtmenu .component-add": "handleMenuAdd",
+            "click .treectxtmenu .remove": "handleMenuRemove",
+            "click .treectxtmenu .disable": "handleMenuEnableDisable",
+            "click .treectxtmenu .enable": "handleMenuEnableDisable",
+            "click .treectxtmenu .set-id": "handleMenuSetId",
         },
 
         initialize: function(opts) {
@@ -47,7 +49,7 @@
 
             var addMenuHtml = WebvsEd.buildAddComponentMenu();
             var ctxtMenu = $(this.ctxtMenuTemplate({addMenu: addMenuHtml}));
-            this.$el.append(ctxtMenu);
+            this.floatContainer.append(ctxtMenu);
             ctxtMenu.menu().hide().css("position", "absolute");
             this.ctxtMenu = ctxtMenu;
 
@@ -275,8 +277,9 @@
             }
             var node = this.tree.tree("getNodeById", panelInfo.id);
             this.tree.tree("selectNode", node);
-        },
-
+        }
     });
+
+    WebvsEd.FloatsMixin(WebvsEd.SidebarView);
 
 })(jQuery, _, Backbone);

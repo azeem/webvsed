@@ -31,13 +31,17 @@
         _.extend(constructor.prototype, {
 
             floatContainerTemplate: _.template([
-                "<div id='<%= cid %>-float-container' class='float-container'></div>"
+                "<div id='<%= cid %>-float-container' class='float-container <%= classes %>'></div>"
             ].join("")),
 
             initialize: function(opts) {
                 oldInitialize.call(this, opts);
 
-                this.floatContainer = $(this.floatContainerTemplate({cid: this.cid}));
+                var data = {
+                    cid: this.cid,
+                    classes: _.result(this, "className")
+                };
+                this.floatContainer = $(this.floatContainerTemplate(data));
                 $("body").append(this.floatContainer);
 
                 if(this.floatEvents) {

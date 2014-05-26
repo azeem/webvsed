@@ -17,6 +17,9 @@
             "click .remove" : "handleToolbarRemove",
             "click .close"  : "handleToolbarClose",
             "click .pop"    : "handleToolbarPop",
+        },
+
+        floatEvents: {
             "click .component-add": "handleMenuAdd",
         },
 
@@ -27,7 +30,7 @@
         render: function() {
             this.$el.append(this.template());
             this.addMenu = $(WebvsEd.buildAddComponentMenu());
-            this.$el.append(this.addMenu);
+            this.floatContainer.append(this.addMenu);
             this.addMenu.menu().hide().css("position", "absolute");
 
             // Build Toolbar buttons
@@ -110,7 +113,8 @@
             }
             this.$(".pop").button("option", popButtonOptions);
         }
-
     });
     
+    WebvsEd.FloatsMixin(WebvsEd.ToolbarView);
+
 })(jQuery, _, Backbone);
