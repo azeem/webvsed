@@ -20,7 +20,7 @@
         },
 
         floatEvents: {
-            "click .component-add": "handleMenuAdd",
+            "click .addmenu .component-add": "handleMenuAdd",
         },
 
         initialize: function(opts) {
@@ -30,7 +30,7 @@
         render: function() {
             this.$el.append(this.template());
             this.addMenu = $(WebvsEd.buildAddComponentMenu());
-            this.floatContainer.append(this.addMenu);
+            this.floatElement(this.addMenu);
             this.addMenu.menu().hide().css("position", "absolute");
 
             // Build Toolbar buttons

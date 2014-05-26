@@ -2,6 +2,7 @@
 
     WebvsEd.TabsView = Backbone.View.extend({
         className: WebvsEd.getClass("tabs-view"),
+        floatClassName: WebvsEd.getClass("tabs-view-float"),
 
         template: _.template([
             "<div class='tabs'>",
@@ -64,13 +65,17 @@
             this.tabList = this.tabs.find("ul");
 
             this.ctxtMenu = $(this.ctxtMenuTemplate());
-            this.floatContainer.append(this.ctxtMenu);
+            this.floatElement(this.ctxtMenu);
             this.ctxtMenu.menu().hide().css("position", "absolute");
 
             $("body").on("click", _.bind(function() {
                 this.ctxtMenu.hide();
                 this.ctxtMenuPanel = null;
             }, this));
+        },
+
+        reflow: function() {
+            this.tabs.tabs("refresh");
         },
 
         showCtxtMenu: function(id, x, y) {
@@ -115,7 +120,7 @@
 
             // reset panelstate
             this.tabList.children().removeClass("panelstate-active");
-            this.$(".ui-dialog").removeClass("panelstate-active");
+            this.findFloat(".ui-dialog").removeClass("panelstate-active");
 
             // set the panelstate class
             if(panelInfo.tab) {
@@ -136,10 +141,10 @@
                 panelInfo.tab = null;
                 panelInfo.panel.dialog({
                     title: panelInfo.title,
-                    appendTo: this.floatContainer,
                     width: 500,
                     height: 500
                 });
+                this.floatElement(panelInfo.panel);
             } else {
                 panelInfo.panel.dialog("destroy").appendTo(this.tabs);
                 var tab = $(this.tabTemplate(panelInfo));

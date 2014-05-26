@@ -29,35 +29,46 @@
         var oldInitialize = constructor.prototype.initialize;
         var oldRemove = constructor.prototype.remove;
         _.extend(constructor.prototype, {
-
-            floatContainerTemplate: _.template([
-                "<div id='<%= cid %>-float-container' class='float-container <%= classes %>'></div>"
-            ].join("")),
-
             initialize: function(opts) {
                 oldInitialize.call(this, opts);
-
-                var data = {
-                    cid: this.cid,
-                    classes: _.result(this, "className")
-                };
-                this.floatContainer = $(this.floatContainerTemplate(data));
-                $("body").append(this.floatContainer);
+                this.uniqFloatClass = "float-element-" + this.cid;
 
                 if(this.floatEvents) {
                     for(var key in this.floatEvents) {
                         var callback = _.bind(this[this.floatEvents[key]], this);
+                        key = $.trim(key);
                         var splitIndex = key.indexOf(" ");
-                        var event = key.substr(0, splitIndex);
-                        var selector = key.substr(splitIndex + 1);
-                        this.floatContainer.on(event, selector, callback);
+                        var key, selector;
+                        if(splitIndex >= 0) {
+                            event = key.substr(0, splitIndex);
+                            selector = "." + this.uniqFloatClass + $.trim(key.substr(splitIndex + 1));
+                        } else {
+                            event = key;
+                            selector = "." + this.uniqFloatClass;
+                        }
+                        $("body").on(event, selector, callback);
+                        console.log(event + "::" + selector);
                     }
+                }
+            },
+
+            findFloat: function(selector) {
+                return $("." + this.uniqFloatClass + selector);
+            },
+
+            floatElement: function(element) {
+                var classes = "float-element " + this.uniqFloatClass + " " + (_.result(this, "floatClassName") || "");
+                if(element.hasClass("ui-dialog-content")) {
+                    element.dialog("option", "dialogClass", classes);
+                } else {
+                    element.addClass(classes);
+                    $("body").append(element);
                 }
             },
 
             remove: function() {
                 oldRemove.call(this);
-                this.floatContainer.remove();
+                $(this.uniqFloatClass).remove();
             }
 
         });

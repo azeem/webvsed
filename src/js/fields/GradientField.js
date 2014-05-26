@@ -71,7 +71,7 @@
             this.fieldBody.append(this.template());
 
             this.colorPicker = $(this.colorPickerTemplate());
-            this.floatContainer.append(this.colorPicker);
+            this.floatElement(this.colorPicker)
             this.colorPicker.css("position", "absolute").hide();
             this.colorPicker.find("input").spectrum({
                 flat: true,
@@ -82,7 +82,7 @@
             });
 
             this.ctxtMenu = $(this.menuTemplate());
-            this.floatContainer.append(this.ctxtMenu);
+            this.floatElement(this.ctxtMenu);
             this.ctxtMenu.menu().css("position", "absolute").hide();
 
             this.$(".color-stops").css("width", this.gradientWidth + this.colorStopWidth);

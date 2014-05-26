@@ -11,8 +11,6 @@
         ].join("")),
 
         initialize: function(opts) {
-            this.width = opts.width || 700;
-            this.height = opts.height || 500;
             this.main = opts.webvsMain;
         },
 
@@ -31,7 +29,7 @@
 
             this.listenTo(this.sidebarView, "resize", this.handleSidebarResize);
 
-            this.fixDimensions();
+            this.reflow();
 
             var mainPanelView = new WebvsEd.MainPanelView({main: this.main});
             var rootNode = this.sidebarView.getRootNode();
@@ -40,23 +38,20 @@
             this.tabsView.activatePanel(rootNode.id);
         },
 
-        fixDimensions: function() {
-            this.$el.css({
-                width: this.width,
-                height: this.height
-            });
+        reflow: function() {
             var row2 = this.$(".row2");
             var row1 = this.$(".row1");
             var tabs = this.tabsView.$el;
             var sidebar = this.sidebarView.$el;
             row2.css("height", this.$el.height()-row1.outerHeight());
-            this.tabsView.$el.css("width", row2.width()-sidebar.outerWidth());
+            this.tabsView.$el.css("width", row2.innerWidth()-sidebar.outerWidth());
+            this.tabsView.reflow();
         },
 
         // event handlers
 
         handleSidebarResize: function() {
-            this.fixDimensions();
+            this.reflow();
         },
     });
 

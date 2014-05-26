@@ -24,6 +24,7 @@
             "tree.select .tree": "handleTreeSelect",
             "tree.move .tree": "handleTreeMove",
             "resize .resize-container": "handleResize",
+            "resizestop .resize-container": "handleResizeStop",
         },
 
         floatEvents: {
@@ -49,7 +50,7 @@
 
             var addMenuHtml = WebvsEd.buildAddComponentMenu();
             var ctxtMenu = $(this.ctxtMenuTemplate({addMenu: addMenuHtml}));
-            this.floatContainer.append(ctxtMenu);
+            this.floatElement(ctxtMenu);
             ctxtMenu.menu().hide().css("position", "absolute");
             this.ctxtMenu = ctxtMenu;
 
@@ -250,6 +251,10 @@
 
         handleResize: function() {
             this.trigger("resize");
+        },
+
+        handleResizeStop: function() {
+            this.trigger("resizestop");
         },
 
         handleTreeCanMove: function(node) {

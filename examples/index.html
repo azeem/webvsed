@@ -6,11 +6,35 @@
     <link rel="stylesheet" type="text/css" href="../bower_components/jqtree/jqtree.css">
     <link rel="stylesheet" type="text/css" href="../bower_components/spectrum/spectrum.css">
     <link rel="stylesheet" type="text/css" href="../build/webvsed.css">
+    <style type="text/css">
+      body {
+          font-size: 12px;
+      }
+
+      .thin-dialog {
+          padding: 0px;
+          border: none;
+      }
+
+      .thin-dialog .ui-dialog-title {
+        font-size: 1em;
+        font-weight: normal;
+        text-align: center;
+      }
+
+      .thin-dialog .ui-dialog-titlebar {
+          border-radius: 3px 3px 0px 0px;
+          border-width: 1px 1px 0px 1px;
+      }
+
+      .thin-dialog .ui-dialog-content {
+         border: 1px solid #AAAAAA;
+         border-radius: 0px 0px 3px 3px;
+         border-width: 0px 1px 1px 1px;
+      }
+    </style>
 </head>
 <body>
-  <div id="editor">
-  </div>
-
   <div id="canvas">
     <canvas width="300" height="300"></canvas>
   </div>
@@ -30,6 +54,8 @@
     var analyser = new Webvs.WebAudioAnalyser();
     $("#canvas").dialog({
         title: "Output",
+        dialogClass: "thin-dialog",
+        position: {my: "right bottom", at: "right bottom"},
         width: 330,
         height: 360
     });
@@ -49,7 +75,15 @@
     var editor = new WebvsEd.EditorView({
         webvsMain: webvsMain
     });
-    $("body").append(editor.el);
+    $("body").prepend(editor.el);
+    editor.$el.dialog({
+        width: 700,
+        height: 500,
+        dialogClass: "thin-dialog",
+        title: "Webvs Editor"
+    }).on("dialogresize", function() {
+        editor.reflow();
+    });
     editor.render();
   </script>
 </body>
