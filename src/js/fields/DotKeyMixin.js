@@ -1,7 +1,7 @@
 (function($, _, Backbone) {
 
-    WebvsEd.DotKeyMixin = function(parentClass) {
-        return {
+    WebvsEd.DotKeyMixin = function(constructor, parentClass) {
+        _.extend(constructor.prototype, {
             setKey: function(key) {
                 if(key == ".") {
                     this.key = key;
@@ -37,7 +37,7 @@
                 }
                 parentClass.prototype.handleModelChange.call(this, model, value, options);
             }
-        };
+        });
     };
 
 })(jQuery, _, Backbone);

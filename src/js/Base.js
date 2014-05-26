@@ -25,6 +25,40 @@
         }).join(" "));
     };
 
+    WebvsEd.FloatsMixin = function(constructor) {
+        var oldInitialize = constructor.prototype.initialize;
+        var oldRemove = constructor.prototype.remove;
+        _.extend(constructor.prototype, {
+
+            floatContainerTemplate: _.template([
+                "<div id='<%= cid %>-float-container' class='float-container'></div>"
+            ].join("")),
+
+            initialize: function(opts) {
+                oldInitialize.call(this, opts);
+
+                this.floatContainer = $(this.floatContainerTemplate({cid: this.cid}));
+                $("body").append(this.floatContainer);
+
+                if(this.floatEvents) {
+                    for(var key in this.floatEvents) {
+                        var callback = _.bind(this[this.floatEvents[key]], this);
+                        var splitIndex = key.indexOf(" ");
+                        var event = key.substr(0, splitIndex);
+                        var selector = key.substr(splitIndex + 1);
+                        this.floatContainer.on(event, selector, callback);
+                    }
+                }
+            },
+
+            remove: function() {
+                oldRemove.call(this);
+                this.floatContainer.remove();
+            }
+
+        });
+    };
+
     WebvsEd.makeRsrcEnum = function(rsrMan) {
         var uris = _.keys(rsrMan.get("uris"));
         var packs = rsrMan.get("packs");

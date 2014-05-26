@@ -36,6 +36,6 @@
         }
     });
 
-    _.extend(WebvsEd.JSONField.prototype, WebvsEd.DotKeyMixin(WebvsEd.TextAreaField));
+    WebvsEd.DotKeyMixin(WebvsEd.JSONField, WebvsEd.TextAreaField);
 
 })(jQuery, _, Backbone);

@@ -6,11 +6,14 @@
         template: _.template([
             "<div title='Click to add color stops' class='gradient'></div>",
             "<div class='color-stops'></div>",
-            "<div class='color-picker'><input type'text'/></div>"
         ].join("")),
 
         colorStopTemplate: _.template([
             "<div title='Right-click to edit' class='color-stop'>&#x25B2;</div>",
+        ].join("")),
+
+        colorPickerTemplate: _.template([
+            "<div class='color-picker'><input type'text'/></div>"
         ].join("")),
 
         menuTemplate: _.template([
@@ -24,13 +27,16 @@
         events: _.extend({
             "click .gradient": "handleAddColorStop",
             "contextmenu .color-stop": "handleColorStopMenu",
-            "change": "handleColorChange",
-            "click .color-stop-menu .remove": "handleMenuRemove",
-            "click .color-stop-menu .edit-color": "handleMenuEdit",
-            "click .color-stop-menu .set-position": "handleMenuSetPosition",
             "drag": "handleDrag",
             "dragstop": "handleDragStop",
         }, WebvsEd.ArrayField.prototype.events),
+
+        floatEvents: {
+            "change": "handleColorChange",
+            "click .color-stop-menu .remove": "handleMenuRemove",
+            "click .color-stop-menu .edit-color": "handleMenuEdit",
+            "click .color-stop-menu .set-position": "handleMenuSetPosition"
+        },
 
         initialize: function(opts) {
             this.colorStops = [];
@@ -63,7 +69,9 @@
         renderField: function() {
             WebvsEd.Field.prototype.renderField.call(this);
             this.fieldBody.append(this.template());
-            this.colorPicker = this.$(".color-picker");
+
+            this.colorPicker = $(this.colorPickerTemplate());
+            this.floatContainer.append(this.colorPicker);
             this.colorPicker.css("position", "absolute").hide();
             this.colorPicker.find("input").spectrum({
                 flat: true,
@@ -74,7 +82,7 @@
             });
 
             this.ctxtMenu = $(this.menuTemplate());
-            this.$el.append(this.ctxtMenu);
+            this.floatContainer.append(this.ctxtMenu);
             this.ctxtMenu.menu().css("position", "absolute").hide();
 
             this.$(".color-stops").css("width", this.gradientWidth + this.colorStopWidth);
@@ -140,12 +148,9 @@
         },
 
         showBelow: function(target, item) {
-            item.show();
             var pos = target.offset();
-            var parentPos = item.offsetParent().offset();
-            pos.top -= parentPos.top;
-            pos.left -= parentPos.left;
             pos.top += target.outerHeight();
+            item.show();
             item.css(pos);
         },
 
@@ -227,5 +232,7 @@
             this.rebuildValue();
         }
     });
+
+    WebvsEd.FloatsMixin(WebvsEd.GradientField);
 
 })(jQuery, _, Backbone);

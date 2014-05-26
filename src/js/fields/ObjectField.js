@@ -74,6 +74,6 @@
         }
     });
 
-    _.extend(WebvsEd.ObjectField.prototype, WebvsEd.DotKeyMixin(WebvsEd.ContainerField));
+    WebvsEd.DotKeyMixin(WebvsEd.ObjectField, WebvsEd.ContainerField);
 
 })(jQuery, _, Backbone);
