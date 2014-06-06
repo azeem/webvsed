@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebVS Editor</title>
+    <link rel="stylesheet" type="text/css" href="../bower_components/jquery-ui/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/jqtree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="../bower_components/spectrum/spectrum.css">
+    <link rel="stylesheet" type="text/css" href="../build/webvsed.css">
+    <style type="text/css">
+      body {
+          font-size: 12px;
+      }
+
+      .thin-dialog {
+          padding: 0px;
+          border: none;
+      }
+
+      .thin-dialog .ui-dialog-title {
+        font-size: 1em;
+        font-weight: normal;
+        text-align: center;
+      }
+
+      .thin-dialog .ui-dialog-titlebar {
+          border-radius: 3px 3px 0px 0px;
+          border-width: 1px 1px 0px 1px;
+      }
+
+      .thin-dialog .ui-dialog-content {
+         border: 1px solid #AAAAAA;
+         border-radius: 0px 0px 3px 3px;
+         border-width: 0px 1px 1px 1px;
+      }
+
+      .tiny-player {
+          width: 500px;
+          position: fixed;
+          bottom: 0px;
+          left: 50%;
+          margin-left: -250px;
+          border: 1px solid #AAAAAA;
+          font-family: sans-serif;
+          z-index: 10000;
+          background-color: #FFFFFF;
+      }
+
+      .tiny-player .row {
+          padding: 3px;
+          border-bottom: 1px dashed #AAAAAA;
+      }
+
+      .tiny-player .row:last-child {
+          border-bottom: none;
+      }
+
+      .tiny-player .row h1 {
+          text-align: right;
+          font-weight: bold;
+          font-size: 1.1em;
+          padding: 0px;
+          margin: 5px;
+          color: #AAAAAA;
+      }
+
+      .tiny-player .row ul {
+          margin: 0px;
+          padding: 0px;
+      }
+
+      .tiny-player .row ul li {
+          list-style: none;
+          padding: 3px;
+      }
+
+      .tiny-player .row ul li:hover {
+          background-color: #B5DFFC;
+      }
+
+      .tiny-player .search-result {
+          height: 100px;
+          overflow-y: scroll;
+      }
+
+      .tiny-player .search-result ul li,
+      .tiny-player .play-list ul li {
+          cursor: pointer;
+      }
+
+    </style>
+</head>
+<body>
+  <div id="canvas">
+    <canvas width="300" height="300"></canvas>
+  </div>
+
+  <script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-ui/ui/jquery-ui.js"></script>
+  <script type="text/javascript" src="../bower_components/jqtree/tree.jquery.js"></script>
+  <script type="text/javascript" src="../bower_components/jquery-closest-descendant/dist/closestDescendant.js"></script>
+  <script type="text/javascript" src="../bower_components/spectrum/spectrum.js"></script>
+  <script type="text/javascript" src="../bower_components/underscore/underscore.js"></script>
+  <script type="text/javascript" src="../bower_components/backbone/backbone.js"></script>
+  <script type="text/javascript" src="../bower_components/webvs/build/webvs.js"></script>
+
+  <script type="text/javascript" src="../build/webvsed.js"></script>
+  <script src="//connect.soundcloud.com/sdk.js"></script>
+  <script type="text/javascript" src="TinyPlayer.js"></script>
+
+  <script type="text/javascript">
+    var analyser = new Webvs.WebAudioAnalyser();
+    $("#canvas").dialog({
+        title: "Output",
+        dialogClass: "thin-dialog",
+        position: {my: "right bottom", at: "right bottom"},
+        width: 330,
+        height: 360
+    });
+
+    var webvsMain = new Webvs.Main({
+        canvas: $("#canvas canvas").get(0),
+        analyser: analyser,
+        resourcePrefix: "../bower_components/webvs/resources/"
+    });
+    webvsMain.start();
+    webvsMain.loadPreset({
+        components: [
+            {type: "SuperScope"}
+        ]
+    });
+
+    var editor = new WebvsEd.EditorView({
+        webvsMain: webvsMain
+    });
+    $("body").prepend(editor.el);
+    editor.$el.dialog({
+        width: 700,
+        height: 500,
+        dialogClass: "thin-dialog",
+        title: "Webvs Editor"
+    }).on("dialogresize", function() {
+        editor.reflow();
+    });
+    editor.render();
+
+    var player = new TinyPlayer({
+        scClientId: "e818e8c85bb8ec3e90a9bbca23ca5e2a"
+    });
+    player.$el.appendTo("body");
+    player.render();
+  </script>
+</body>
+</html>

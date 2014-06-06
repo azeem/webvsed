@@ -71,7 +71,7 @@
             this.fieldBody.append(this.template());
 
             this.colorPicker = $(this.colorPickerTemplate());
-            this.floatElement(this.colorPicker)
+            this.floatElement(this.colorPicker);
             this.colorPicker.css("position", "absolute").hide();
             this.colorPicker.find("input").spectrum({
                 flat: true,

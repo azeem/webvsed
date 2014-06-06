@@ -38,7 +38,7 @@
                         var callback = _.bind(this[this.floatEvents[key]], this);
                         key = $.trim(key);
                         var splitIndex = key.indexOf(" ");
-                        var key, selector;
+                        var selector;
                         if(splitIndex >= 0) {
                             event = key.substr(0, splitIndex);
                             selector = "." + this.uniqFloatClass + $.trim(key.substr(splitIndex + 1));
@@ -47,7 +47,6 @@
                             selector = "." + this.uniqFloatClass;
                         }
                         $("body").on(event, selector, callback);
-                        console.log(event + "::" + selector);
                     }
                 }
             },
