@@ -50,10 +50,23 @@
   <script type="text/javascript" src="../bower_components/webvs/build/webvs.js"></script>
 
   <script type="text/javascript" src="../build/webvsed.js"></script>
+
+  <script type="text/javascript" src="../bower_components/soundmanager2/script/soundmanager2.js"></script>
   <script src="//connect.soundcloud.com/sdk.js"></script>
   <script type="text/javascript" src="../bower_components/TinyPlayer/build/TinyPlayer.js"></script>
 
   <script type="text/javascript">
+    var isMozilla = window.webkitAudioContext?false:true;
+    if(isMozilla) {
+        soundManager.setup({
+            url: "../bower_components/soundmanager2/swf",
+            flashVersion: 9,
+            preferFlash: true,
+            useFastPolling: true,
+            useHighPerformance: true
+        });
+    }
+
     $("#canvas").dialog({
         title: "Output",
         dialogClass: "thin-dialog",
@@ -62,7 +75,12 @@
         height: 360
     });
 
-    var analyser = new Webvs.WebAudioAnalyser();
+    var analyser;
+    if(isMozilla) {
+        analyser = new Webvs.SMAnalyser();
+    } else {
+        analyser = new Webvs.WebAudioAnalyser();
+    }
     var webvsMain = new Webvs.Main({
         canvas: $("#canvas canvas").get(0),
         analyser: analyser,
@@ -76,11 +94,21 @@
     });
 
     var player = new TinyPlayer({
-        scClientId: "e818e8c85bb8ec3e90a9bbca23ca5e2a"
+        scClientId: "e818e8c85bb8ec3e90a9bbca23ca5e2a",
+        useSoundManager: isMozilla
     });
     player.$el.appendTo("body");
     player.render();
-    analyser.load(player.audio);
+
+    if(isMozilla) {
+        // patch the player sound creation method
+        // with the analyser sound creation method
+        // since soundmanager2 sound object properties
+        // be modified after creation
+        player.audio.createSound = _.bind(analyser.createSound, analyser);
+    } else {
+        analyser.load(player.audio);
+    }
 
     var editor = new WebvsEd.EditorView({
         webvsMain: webvsMain
