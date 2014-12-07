@@ -84,7 +84,7 @@ module.exports = function(grunt) {
                     port: 8000,
                     base: ".",
                     directory: ".",
-                    livereload: true
+                    livereload: 35750
                 }
             }
         },
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
                 files: ["src/**/*", "examples/**/*"],
                 tasks: ["default"],
                 options: {
-                    livereload: true
+                    livereload: 35750
                 }
             }
         }

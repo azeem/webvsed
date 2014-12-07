@@ -95,7 +95,7 @@
             } else {
                 return;
             }
-            var componentName = $(event.target).data("webvsedComponentName");
+            var componentName = $(event.currentTarget).find("a").data("webvsedComponentName");
             WebvsEd.addComponentBeforeOrInside(component, componentName);
         },
 

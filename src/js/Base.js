@@ -58,6 +58,7 @@
             floatElement: function(element) {
                 var classes = "float-element " + this.uniqFloatClass + " " + (_.result(this, "floatClassName") || "");
                 if(element.hasClass("ui-dialog-content")) {
+                    classes += " " + element.dialog("option", "dialogClass");
                     element.dialog("option", "dialogClass", classes);
                 } else {
                     element.addClass(classes);
