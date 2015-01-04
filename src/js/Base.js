@@ -68,7 +68,7 @@
 
             remove: function() {
                 oldRemove.call(this);
-                $(this.uniqFloatClass).remove();
+                $("." + this.uniqFloatClass).remove();
             }
 
         });

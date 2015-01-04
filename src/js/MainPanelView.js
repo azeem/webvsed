@@ -10,7 +10,7 @@
                     title: "Meta",
                     model: main,
                     collapsible: true,
-                    collapsed: true,
+                    collapsed: false,
                     fields: [
                         {
                             type: "TextField",
@@ -24,7 +24,8 @@
                             key: "description",
                             title: "Description",
                             required: false,
-                            default: ""
+                            default: "",
+                            rows: 8
                         }
                     ]
                 },
